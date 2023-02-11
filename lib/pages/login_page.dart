@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:movie_booking_app/common_widgets/logo_widgets.dart';
+import 'package:movie_booking_app/functions/reuse_functions.dart';
 import 'package:movie_booking_app/pages/get_otp_page.dart';
 import '../common_widgets/terms_and_policy_widget.dart';
 import '../resources/colors.dart';
 import '../resources/dimensions.dart';
 import '../resources/strings.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  String phoneNumber = "";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,11 +38,63 @@ class LoginPage extends StatelessWidget {
                 SizedBox(
                   height: MARGIN_LARGE,
                 ),
-                PhoneNumberInputFormWidget(),
+                Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Country Code",
+                        style: TextStyle(
+                            color: LOGIN_SCREEN_SUB_TXT_COLOR, fontSize: 12),
+                      ),
+                      Stack(
+                        children: [
+                          InternationalPhoneNumberInput(
+                            onInputChanged: (value) {
+                              setState(() {
+                                phoneNumber = value.phoneNumber!;
+                              });
+                            },
+                            autoValidateMode: AutovalidateMode.onUserInteraction,
+                            countrySelectorScrollControlled: true,
+                            validator: (value) {
+                              if(value!.isEmpty){
+                                return "Please Enter a phone Number";
+                              }else if(value.length != 12) {
+                                return "Enter a valid phone number";
+                              }
+                            },
+                            selectorConfig: SelectorConfig(
+                              selectorType: PhoneInputSelectorType.DIALOG,
+                              showFlags: false,
+                            ),
+                            selectorTextStyle: TextStyle(color: Colors.white),
+                            inputDecoration: InputDecoration(
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.white,
+                                ),
+                              ),
+                              hintText: "Mobile Phone Number",
+                              hintStyle: TextStyle(
+                                color: LOGIN_SCREEN_SUB_TXT_COLOR,
+                                fontSize: 16,
+                              ),
+                            ),
+                            textStyle: TextStyle(
+                              color: Colors.white,
+                            ),
+                            spaceBetweenSelectorAndTextField: 20,
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
                 SizedBox(
                   height: MARGIN_SMALL_4X,
                 ),
-                VerifyYourPhoneNumber(() => Navigator.push(context, MaterialPageRoute(builder: (context) => GetOTPPage(),),),),
+                VerifyYourPhoneNumber(phoneNumber),
                 SizedBox(
                   height: 20,
                 ),
@@ -56,6 +115,7 @@ class LoginPage extends StatelessWidget {
     );
   }
 }
+
 
 class ContinueWithGoogleButton extends StatelessWidget {
   const ContinueWithGoogleButton({
@@ -127,78 +187,19 @@ class DividerWidget extends StatelessWidget {
   }
 }
 
-class PhoneNumberInputFormWidget extends StatelessWidget {
-  const PhoneNumberInputFormWidget({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Country Code",
-            style: TextStyle(
-                color: LOGIN_SCREEN_SUB_TXT_COLOR, fontSize: 12),
-          ),
-          Stack(
-            children: [
-              InternationalPhoneNumberInput(
-                onInputChanged: (value) {
-                  print(value);
-                },
-                autoValidateMode: AutovalidateMode.onUserInteraction,
-                countrySelectorScrollControlled: true,
-                validator: (value) {
-                  if(value!.isEmpty){
-                    return "Please Enter a phone Number";
-                  }else if(value.length > 11 || value.length < 11) {
-                    return "Enter a valid phone number";
-                  }
-                },
-                selectorConfig: SelectorConfig(
-                  selectorType: PhoneInputSelectorType.DIALOG,
-                  showFlags: false,
-
-                ),
-                selectorTextStyle: TextStyle(color: Colors.white),
-                inputDecoration: InputDecoration(
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.white,
-                    ),
-                  ),
-                  hintText: "Mobile Phone Number",
-                  hintStyle: TextStyle(
-                    color: LOGIN_SCREEN_SUB_TXT_COLOR,
-                    fontSize: 16,
-                  ),
-                ),
-                textStyle: TextStyle(
-                  color: Colors.white,
-                ),
-                spaceBetweenSelectorAndTextField: 20,
-              ),
-            ],
-          )
-        ],
-      ),
-    );
-  }
-}
 
 class VerifyYourPhoneNumber extends StatelessWidget {
-  final Function onPageChange;
-  VerifyYourPhoneNumber(this.onPageChange);
+  final String phoneNumber;
+  VerifyYourPhoneNumber(this.phoneNumber);
 
   @override
   Widget build(BuildContext context) {
     return Container(
         child: MaterialButton(
       onPressed: () {
-        onPageChange();
+        if(phoneNumber.isNotEmpty && phoneNumber.startsWith("+95") && phoneNumber.length == 13){
+          router(context, GetOTPPage());
+        }
       },
       color: PRIMARY_COLOR,
       shape: RoundedRectangleBorder(
