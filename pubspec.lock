@@ -121,13 +121,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  gradient_textfield:
-    dependency: "direct main"
-    description:
-      name: gradient_textfield
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.1"
   html:
     dependency: transitive
     description:
@@ -135,6 +128,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.15.1"
+  intl:
+    dependency: "direct main"
+    description:
+      name: intl
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.18.0"
   intl_phone_number_input:
     dependency: "direct main"
     description:

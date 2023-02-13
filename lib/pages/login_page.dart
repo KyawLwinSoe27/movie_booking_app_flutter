@@ -25,8 +25,7 @@ class _LoginPageState extends State<LoginPage> {
             margin: EdgeInsets.only(left: MARGIN_SMALL_4X, right: MARGIN_SMALL_4X, top: MARGIN_MEDIUM_2X),
             child: Column(
               children: [
-
-                Logo_Widget(),
+                LogoWidget(),
                 SizedBox(
                   height: MARGIN_LARGE,
                 ),

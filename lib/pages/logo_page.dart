@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:movie_booking_app/functions/reuse_functions.dart';
 import 'package:movie_booking_app/pages/login_page.dart';
 import 'package:movie_booking_app/resources/colors.dart';
 import 'package:movie_booking_app/resources/dimensions.dart';
@@ -18,13 +19,14 @@ class _LogoPageState extends State<LogoPage> {
     super.initState();
     startTime();
   }
+
   startTime() async {
-    var duration = new Duration(seconds: 3);
-    return Timer(duration, route);
+    var duration = new Duration(seconds: 5);
+    return Timer(duration, () {
+      router(context, LoginPage());
+    });
   }
-  route(){
-    Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
-  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,40 +36,49 @@ class _LogoPageState extends State<LogoPage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Logo_Widget(),
+          LogoWidget(),
           SizedBox(
             height: MARGIN_SMALL_2X,
           ),
-          RichText(
-            text: TextSpan(
-                style: TextStyle(
-                  fontSize: LOGO_TXT_FONT_SIZE,
-                  fontWeight: FontWeight.w600,
-                ),
-                children: [
-                  TextSpan(
-                    text: LOGO_CHAR,
-                    style: TextStyle(color: PRIMARY_COLOR),
-                  ),
-                  WidgetSpan(
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        right: MARGIN_SMALL_1X,
-                      ),
-                    ),
-                  ),
-                  TextSpan(
-                    text: LOGO_TITLE,
-                    style: TextStyle(
-                      color: LOGO_TXT_COLOR,
-                    ),
-                  )
-                ]),
-          ),
+          LogoScreenTextWidget(),
         ],
       )),
     );
   }
 }
 
+class LogoScreenTextWidget extends StatelessWidget {
+  const LogoScreenTextWidget({
+    Key? key,
+  }) : super(key: key);
 
+  @override
+  Widget build(BuildContext context) {
+    return RichText(
+      text: TextSpan(
+          style: TextStyle(
+            fontSize: LOGO_TXT_FONT_SIZE,
+            fontWeight: FontWeight.w600,
+          ),
+          children: [
+            TextSpan(
+              text: LOGO_CHAR,
+              style: TextStyle(color: PRIMARY_COLOR),
+            ),
+            WidgetSpan(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  right: MARGIN_SMALL_1X,
+                ),
+              ),
+            ),
+            TextSpan(
+              text: LOGO_TITLE,
+              style: TextStyle(
+                color: LOGO_TXT_COLOR,
+              ),
+            )
+          ]),
+    );
+  }
+}

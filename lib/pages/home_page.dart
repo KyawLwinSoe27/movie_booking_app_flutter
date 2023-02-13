@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_booking_app/functions/reuse_functions.dart';
-import 'package:movie_booking_app/pages/coming_soon_movie_details.dart';
-import 'package:movie_booking_app/pages/now_showing_movie_details.dart';
+import 'package:movie_booking_app/pages/movie_details.dart';
 import 'package:movie_booking_app/resources/colors.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
@@ -95,9 +94,9 @@ class _HomePageState extends State<HomePage> {
                                 padding: const EdgeInsets.all(5.0),
                                 child: TabBar(
                                   unselectedLabelColor:
-                                      LOGIN_SCREEN_SUB_TXT_COLOR,
+                                  LOGIN_SCREEN_SUB_TXT_COLOR,
                                   labelColor:
-                                      HOME_PAGE_TABBAR_SELECTED_TEXT_COLOR,
+                                  HOME_PAGE_TABBAR_SELECTED_TEXT_COLOR,
                                   indicator: BoxDecoration(
                                     color: PRIMARY_COLOR,
                                     borderRadius: BorderRadius.circular(4),
@@ -132,18 +131,19 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
+
             SliverGrid(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   mainAxisSpacing: 21,
                   crossAxisSpacing: 21,
-                  childAspectRatio: 0.5),
+                  childAspectRatio: 0.63),
               delegate: SliverChildBuilderDelegate((context, index) {
                 return !checkNowAndComing
                     ? NowShowingMovieView(index,
-                        nowShowingMovies: nowShowingMovies)
+                        nowShowingMovies: nowShowingMovies, checkNowAndComing : checkNowAndComing)
                     : ComingSoonMovieView(index,
-                        ComingSoonMovies: comingSoonMovies);
+                        ComingSoonMovies: comingSoonMovies, checkNowAndComing : checkNowAndComing);
               },
                   childCount: !checkNowAndComing
                       ? nowShowingMovies.length
@@ -186,16 +186,20 @@ class NowShowingMovieView extends StatelessWidget {
     this.index, {
     Key? key,
     required this.nowShowingMovies,
+        required this.checkNowAndComing
   }) : super(key: key);
 
   final List<String> nowShowingMovies;
   final int index;
+  final bool checkNowAndComing;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-       router(context, NowShowingMovieDetails());
+       // router(context, NowShowingMovieDetails());
+       //  print(checkNowAndComing);
+        router(context, MovieDetails(checkNowAndComing));
       },
       child: Container(
         child: Stack(
@@ -311,18 +315,20 @@ class ComingSoonMovieView extends StatelessWidget {
     this.index, {
     Key? key,
     required this.ComingSoonMovies,
+        required this.checkNowAndComing,
   }) : super(key: key);
 
   final List<String> ComingSoonMovies;
   final int index;
+  final bool checkNowAndComing;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        print(index);
-        router(context, ComingSoonMovieDetails());
-      },
+        print(checkNowAndComing);
+        router(context, MovieDetails(checkNowAndComing));
+        },
       child: Container(
         child: Stack(
           children: [

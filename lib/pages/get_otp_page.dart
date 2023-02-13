@@ -50,7 +50,7 @@ class _GetOTPPageState extends State<GetOTPPage> {
                 SizedBox(
                   height: MARGIN_SMALL_2X,
                 ),
-                Logo_Widget(),
+                LogoWidget(),
                 SizedBox(
                   height: MARGIN_LARGE,
                 ),

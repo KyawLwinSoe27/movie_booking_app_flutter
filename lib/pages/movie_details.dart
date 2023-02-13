@@ -11,16 +11,16 @@ import '../common_widgets/crd_widget.dart';
 import '../resources/dimensions.dart';
 import 'choose_time_and_cinema.dart';
 
-class ComingSoonMovieDetails extends StatefulWidget {
-  const ComingSoonMovieDetails({Key? key}) : super(key: key);
+class MovieDetails extends StatefulWidget {
+  final checkNowAndComing;
+  const MovieDetails(this.checkNowAndComing, {Key? key}) : super(key: key);
 
   @override
-  State<ComingSoonMovieDetails> createState() => _ComingSoonMovieDetailsState();
+  State<MovieDetails> createState() => _MovieDetailsState();
 }
 
-class _ComingSoonMovieDetailsState extends State<ComingSoonMovieDetails> {
+class _MovieDetailsState extends State<MovieDetails> {
   late FlickManager flickManager;
-
   @override
   void initState() {
     super.initState();
@@ -47,6 +47,8 @@ class _ComingSoonMovieDetailsState extends State<ComingSoonMovieDetails> {
     ];
     List<String> movieViewTypes = [
       "2D",
+      "3D",
+      "3D IMAGE"
     ];
     return Scaffold(
       backgroundColor: BACKGROUND_COLOR,
@@ -69,14 +71,17 @@ class _ComingSoonMovieDetailsState extends State<ComingSoonMovieDetails> {
                 ],
               ),
             ),
-            NotiReleaseWidgetView(),
+            Visibility(
+              visible: widget.checkNowAndComing,
+              child: NotiReleaseWidgetView(),
+            ),
             Container(
               margin: EdgeInsets.symmetric(horizontal: 17),
               child: StoryLineWidgetView(),
             ),
             Container(
               margin: EdgeInsets.symmetric(horizontal: 17, vertical: 20),
-              child: CastWidgetView(),
+              child: CastWidgetView(checkNowAndComing : widget.checkNowAndComing),
             ),
           ],
         ),
@@ -93,19 +98,17 @@ class NotiReleaseWidgetView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(left: 17,right: 17,bottom: 30),
+      margin: EdgeInsets.only(left: 17, right: 17, bottom: 30),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10.0),
-        gradient: LinearGradient(
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-          colors: [
-            Color.fromRGBO(255, 255, 255, 0.6),
-            Color.fromRGBO(204, 204, 204, 0.6),
-            Color.fromRGBO(221, 221, 221, 0.3)
-          ]
-        )
-      ),
+          borderRadius: BorderRadius.circular(10.0),
+          gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                Color.fromRGBO(255, 255, 255, 0.6),
+                Color.fromRGBO(204, 204, 204, 0.6),
+                Color.fromRGBO(221, 221, 221, 0.3)
+              ])),
       child: Row(
         children: [
           Container(
@@ -115,10 +118,27 @@ class NotiReleaseWidgetView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Releasing in 5 days", style: TextStyle(color: Colors.white,fontSize: 16,fontWeight: FontWeight.w700),),
-                    SizedBox(height: MARGIN_SMALL_2X,),
-                    Text("Get notify as soon as movie booking opens up in your city!",style: TextStyle(fontWeight: FontWeight.w600,fontSize: 14,color: Color.fromRGBO(200, 200, 200, 1),),),
-                    SizedBox(height: MARGIN_SMALL_20,),
+                    Text(
+                      "Releasing in 5 days",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700),
+                    ),
+                    SizedBox(
+                      height: MARGIN_SMALL_2X,
+                    ),
+                    Text(
+                      "Get notify as soon as movie booking opens up in your city!",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: Color.fromRGBO(200, 200, 200, 1),
+                      ),
+                    ),
+                    SizedBox(
+                      height: MARGIN_SMALL_20,
+                    ),
                     Container(
                       width: 150,
                       height: 35,
@@ -131,8 +151,16 @@ class NotiReleaseWidgetView extends StatelessWidget {
                         child: Row(
                           children: [
                             Icon(Icons.notifications_active),
-                            SizedBox(width: 12,),
-                            Text("Set Notification", style: TextStyle(fontSize: 14,fontWeight: FontWeight.w500,color: Colors.black),)
+                            SizedBox(
+                              width: 12,
+                            ),
+                            Text(
+                              "Set Notification",
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black),
+                            )
                           ],
                         ),
                       ),
@@ -142,12 +170,14 @@ class NotiReleaseWidgetView extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(width: 17,),
+          SizedBox(
+            width: 17,
+          ),
           Container(
             width: 110,
             height: 127,
-
-            child: Image.asset("images/human_illustrate.png",fit: BoxFit.cover),
+            child:
+                Image.asset("images/human_illustrate.png", fit: BoxFit.cover),
           )
         ],
       ),
@@ -156,7 +186,9 @@ class NotiReleaseWidgetView extends StatelessWidget {
 }
 
 class CastWidgetView extends StatelessWidget {
+  final bool checkNowAndComing;
   const CastWidgetView({
+    required this.checkNowAndComing,
     Key? key,
   }) : super(key: key);
 
@@ -174,13 +206,14 @@ class CastWidgetView extends StatelessWidget {
           height: MARGIN_SMALL_20,
         ),
         Container(
-          height: 100,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: 10,
-            itemBuilder: (BuildContext context, int index) {
-              return Container(
-                margin: EdgeInsets.only(right: 23),
+          height: 150,
+          child: Stack(
+            children: [ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: 10,
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                margin: EdgeInsets.only(right: 23,bottom: 50),
                 child: Column(
                   children: [
                     Container(
@@ -203,10 +236,14 @@ class CastWidgetView extends StatelessWidget {
                       ),
                       textAlign: TextAlign.center,
                     )
+
                   ],
                 ),
-              );
-            },
+                  );
+              },
+            ),
+              Visibility(visible: !checkNowAndComing,child: BookingButton()),
+            ]
           ),
         ),
       ],
@@ -214,86 +251,55 @@ class CastWidgetView extends StatelessWidget {
   }
 }
 
-class ButtonText extends StatelessWidget {
-  const ButtonText({
+class BookingButton extends StatelessWidget {
+  const BookingButton({
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Positioned(
-        top: 65,
-        left: 150,
-        child: GestureDetector(
-            onTap: () {
-              router(context, ChooseTimeAndCinema());
-            },
-            child: Text(
-              "Booking",
-              style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.black),
-            )));
-  }
-}
-
-class ButtonRightSideCircle extends StatelessWidget {
-  const ButtonRightSideCircle({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Positioned(
-        top: 65,
-        right: 55,
-        child: Container(
-          width: 20,
-          height: 20,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10.0),
-            color: BACKGROUND_COLOR,
-          ),
-        ));
-  }
-}
-
-class ButtonLeftSideCircle extends StatelessWidget {
-  const ButtonLeftSideCircle({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Positioned(
-        top: 65,
-        left: 55,
-        child: Container(
-          width: 20,
-          height: 20,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10.0),
-            color: BACKGROUND_COLOR,
-          ),
-        ));
-  }
-}
-
-class ButtonBody extends StatelessWidget {
-  const ButtonBody({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.bottomCenter,
+    return GestureDetector(
+      onTap: () {
+        router(context, ChooseTimeAndCinema());
+      },
       child: Container(
-        width: 230,
-        height: 50,
-        decoration: BoxDecoration(
-            color: PRIMARY_COLOR, borderRadius: BorderRadius.circular(10.0)),
+          alignment: Alignment.bottomCenter,
+          child: Stack(
+            children: [Container(
+              width: 230,
+              height: 50,
+              decoration: BoxDecoration(
+                color: PRIMARY_COLOR,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Center(child: Text("Booking",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w700),)),
+            ),
+              Positioned(
+                left: -10,
+                top: 16,
+                child: Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: BACKGROUND_COLOR,
+                  ),
+                ),
+              ),
+              Positioned(
+                right: -10,
+                top: 16,
+                child: Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: BACKGROUND_COLOR,
+                  ),
+                ),
+              ),
+        ]
+          )
       ),
     );
   }
@@ -342,7 +348,6 @@ class BannerSectionView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-
       child: Stack(
         children: [
           Container(
@@ -379,7 +384,7 @@ class BannerSectionView extends StatelessWidget {
             ),
           ),
           Container(
-            margin: EdgeInsets.only(top: 180),
+              margin: EdgeInsets.only(top: 180),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -394,9 +399,9 @@ class BannerSectionView extends StatelessWidget {
                   SizedBox(
                     width: 18,
                   ),
-                  Container(
-                    margin: EdgeInsets.only(top: 60),
-                    child: Expanded(
+                  Expanded(
+                    child: Container(
+                      margin: EdgeInsets.only(top: 60),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -426,7 +431,8 @@ class BannerSectionView extends StatelessWidget {
                           Row(
                             children: movieViewTypes.map((movieViewType) {
                               return Container(
-                                  margin: EdgeInsets.only(right: MARGIN_SMALL_1X),
+                                  margin:
+                                      EdgeInsets.only(right: MARGIN_SMALL_1X),
                                   child: Text(
                                     movieViewType + ",",
                                     style: TextStyle(
@@ -439,14 +445,13 @@ class BannerSectionView extends StatelessWidget {
                           SizedBox(
                             height: 18,
                           ),
-                          Row(
+                          Wrap(
                             children: moviesChip.map((category) {
                               return Padding(
                                 padding: EdgeInsets.only(right: 5.0),
-                                child: Wrap(
-                                  children: [
-                                    Text(category),
-                                  ],
+                                child: Chip(
+                                  label: Text(category),
+                                  backgroundColor: PRIMARY_COLOR,
                                 ),
                               );
                             }).toList(),
@@ -462,3 +467,4 @@ class BannerSectionView extends StatelessWidget {
     );
   }
 }
+

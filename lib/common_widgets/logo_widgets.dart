@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:movie_booking_app/resources/dimensions.dart';
 
-class Logo_Widget extends StatelessWidget {
-  const Logo_Widget({
+class LogoWidget extends StatelessWidget {
+  const LogoWidget({
     Key? key,
   }) : super(key: key);
 
