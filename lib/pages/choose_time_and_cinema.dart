@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:movie_booking_app/functions/reuse_functions.dart';
+import 'package:movie_booking_app/pages/seat_selection.dart';
 import 'package:movie_booking_app/resources/colors.dart';
 
 import '../resources/dimensions.dart';
@@ -141,7 +142,7 @@ class MovieShowTimeGridWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onLongPress: () {
-        print("Long Pressed");
+        router(context, SeatSelectionPage());
       },
       child: Container(
         margin: EdgeInsets.only(top: MARGIN_SMALL_20,left:MARGIN_SMALL_3X,right: MARGIN_SMALL_3X),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movie_booking_app/pages/seat_selection.dart';
 import 'package:movie_booking_app/pages/choose_time_and_cinema.dart';
 import 'package:movie_booking_app/pages/get_otp_page.dart';
 import 'package:movie_booking_app/pages/home_page.dart';
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      home:ChooseTimeAndCinema(),
+      home:SeatSelectionPage(),
     );
   }
 }

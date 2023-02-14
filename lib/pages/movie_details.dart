@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:movie_booking_app/resources/colors.dart';
 
 import '../common_widgets/IMDb_widget.dart';
+import '../common_widgets/booking_button.dart';
 import '../common_widgets/crd_widget.dart';
 import '../resources/dimensions.dart';
 import 'choose_time_and_cinema.dart';
@@ -242,7 +243,7 @@ class CastWidgetView extends StatelessWidget {
                   );
               },
             ),
-              Visibility(visible: !checkNowAndComing,child: BookingButton()),
+              Visibility(visible: !checkNowAndComing,child: BookingButton("Booking",ChooseTimeAndCinema())),
             ]
           ),
         ),
@@ -251,59 +252,7 @@ class CastWidgetView extends StatelessWidget {
   }
 }
 
-class BookingButton extends StatelessWidget {
-  const BookingButton({
-    Key? key,
-  }) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        router(context, ChooseTimeAndCinema());
-      },
-      child: Container(
-          alignment: Alignment.bottomCenter,
-          child: Stack(
-            children: [Container(
-              width: 230,
-              height: 50,
-              decoration: BoxDecoration(
-                color: PRIMARY_COLOR,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Center(child: Text("Booking",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w700),)),
-            ),
-              Positioned(
-                left: -10,
-                top: 16,
-                child: Container(
-                  width: 20,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: BACKGROUND_COLOR,
-                  ),
-                ),
-              ),
-              Positioned(
-                right: -10,
-                top: 16,
-                child: Container(
-                  width: 20,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: BACKGROUND_COLOR,
-                  ),
-                ),
-              ),
-        ]
-          )
-      ),
-    );
-  }
-}
 
 class StoryLineWidgetView extends StatelessWidget {
   const StoryLineWidgetView({
