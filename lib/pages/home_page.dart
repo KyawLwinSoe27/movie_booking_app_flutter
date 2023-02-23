@@ -5,14 +5,22 @@ import 'package:movie_booking_app/resources/colors.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
 import '../common_widgets/IMDb_widget.dart';
+import '../common_widgets/back_to_widget.dart';
+import '../common_widgets/movie_ticket.dart';
 import '../common_widgets/rating_level.dart';
 import '../resources/dimensions.dart';
+import '../resources/strings.dart';
+import 'cancel_booking.dart';
+import './cinema_list.dart';
+import './profile_tab_list.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
+
+
 }
 
 class _HomePageState extends State<HomePage> {
@@ -37,101 +45,523 @@ class _HomePageState extends State<HomePage> {
     "https://akamaividz2.zee5.com/image/upload/w_504,h_756,c_scale,f_webp,q_auto:eco/resources/0-0-1z5266206/portrait/1920x7707e5ac864fad243edba4af6583b84b115.jpg",
   ];
   bool checkNowAndComing = false;
+  int _currentPage = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: BACKGROUND_COLOR,
-      appBar: AppBar(
+      appBar: _currentPage != 3
+          ? AppBar(
+              elevation: 0.0,
+              backgroundColor: BACKGROUND_COLOR,
+              leading: _currentPage == 0 ? Icon(Icons.near_me) : null,
+              title: _currentPage == 0 ? Text("Yangon") : null,
+              actions: _currentPage != 3
+                  ? [
+                      IconButton(
+                        icon: Icon(Icons.search),
+                        onPressed: () {
+                          showSearch(
+                            context: context,
+                            delegate: _currentPage == 0 ? MoviesSearch(checkNowAndComing,nowShowingMovies,comingSoonMovies) :  CinemaSearch() ,
+                          );
+                        },
+                      ),
+                      SizedBox(
+                        width: MARGIN_SMALL_30,
+                      ),
+                      Icon(Icons.notifications),
+                      SizedBox(
+                        width: MARGIN_SMALL_30,
+                      ),
+                      Container(
+                          padding: EdgeInsets.only(
+                            right: MARGIN_SMALL_2X,
+                          ),
+                          child: Icon(Icons.document_scanner_outlined))
+                    ]
+                  : null,
+            )
+          : null,
+      body: _currentPage == 0
+          ? Movies(context)
+          : _currentPage == 1
+              ? CinemaLists()
+              : _currentPage == 2
+                  ? TicketWidget()
+                  : _currentPage == 3
+                      ? ProfileWidget()
+                      : null,
+      bottomNavigationBar: BottomNavigationBar(
+        unselectedItemColor: LOGIN_SCREEN_SUB_TXT_COLOR,
+        selectedItemColor: PRIMARY_COLOR,
+        type: BottomNavigationBarType.fixed,
         backgroundColor: BACKGROUND_COLOR,
-        leading: Icon(Icons.near_me),
-        title: Text("Yangon"),
-        actions: [
-          Icon(Icons.search),
-          SizedBox(
-            width: MARGIN_SMALL_30,
+        currentIndex: _currentPage,
+        onTap: (index) {
+          setState(() {
+            _currentPage = index;
+          });
+        },
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.play_circle_sharp),
+            label: 'Movies',
           ),
-          Icon(Icons.notifications),
-          SizedBox(
-            width: MARGIN_SMALL_30,
+          BottomNavigationBarItem(
+            icon: Icon(Icons.theaters),
+            label: 'Cinema',
           ),
-          Container(
-              padding: EdgeInsets.only(
-                right: MARGIN_SMALL_2X,
-              ),
-              child: Icon(Icons.document_scanner_outlined))
+          BottomNavigationBarItem(
+            icon: Icon(Icons.receipt),
+            label: 'Ticket',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: 'Profile',
+          ),
         ],
       ),
-      body: Container(
-        margin: EdgeInsets.symmetric(horizontal: MARGIN_SMALL_20),
-        child: CustomScrollView(
-          scrollDirection: Axis.vertical,
-          slivers: [
-            SliverList(
-              delegate: SliverChildListDelegate(
-                [
-                  BannerCarouselView(),
-                  Column(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.symmetric(
-                          vertical: MARGIN_SMALL_20,
-                        ),
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(MARGIN_SMALL_1X),
-                          gradient: RadialGradient(colors: [
-                            HOME_PAGE_TAB_CENTER_BG,
-                            HOME_PAGE_TAB_CORNER_BG
-                          ], radius: 5),
-                        ),
-                        child: DefaultTabController(
-                          initialIndex: 0,
-                          length: 2,
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: TabBar(
-                                  unselectedLabelColor:
-                                  LOGIN_SCREEN_SUB_TXT_COLOR,
-                                  labelColor:
-                                  HOME_PAGE_TABBAR_SELECTED_TEXT_COLOR,
-                                  indicator: BoxDecoration(
-                                    color: PRIMARY_COLOR,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  onTap: (index) {
-                                    if (index == 1) {
-                                      setState(() {
-                                        checkNowAndComing = true;
-                                      });
-                                    } else if (index == 0) {
-                                      setState(() {
-                                        checkNowAndComing = false;
-                                      });
-                                    }
-                                  },
-                                  tabs: [
-                                    Tab(
-                                      text: 'Now Showing',
-                                    ),
-                                    Tab(
-                                      text: 'Coming Soon',
-                                    )
-                                  ],
-                                ),
+    );
+  }
+
+  Container Movies(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: MARGIN_SMALL_20),
+      child: CustomScrollView(
+        scrollDirection: Axis.vertical,
+        slivers: [
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                BannerCarouselView(),
+                Column(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.symmetric(
+                        vertical: MARGIN_SMALL_20,
+                      ),
+                      width: MediaQuery.of(context).size.width,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(MARGIN_SMALL_1X),
+                        gradient: RadialGradient(colors: [
+                          HOME_PAGE_TAB_CENTER_BG,
+                          HOME_PAGE_TAB_CORNER_BG
+                        ], radius: 5),
+                      ),
+                      child: DefaultTabController(
+                        initialIndex: 0,
+                        length: 2,
+                        //need to change
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: TabBar(
+                            unselectedLabelColor: LOGIN_SCREEN_SUB_TXT_COLOR,
+                            labelColor: HOME_PAGE_TABBAR_SELECTED_TEXT_COLOR,
+                            indicator: BoxDecoration(
+                              color: PRIMARY_COLOR,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            onTap: (index) {
+                              if (index == 1) {
+                                setState(() {
+                                  checkNowAndComing = true;
+                                });
+                              } else if (index == 0) {
+                                setState(() {
+                                  checkNowAndComing = false;
+                                });
+                              }
+                            },
+                            tabs: [
+                              Tab(
+                                text: 'Now Showing',
                               ),
+                              Tab(
+                                text: 'Coming Soon',
+                              )
                             ],
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+              ],
             ),
+          ),
+          SliverGrid(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 21,
+                crossAxisSpacing: 21,
+                childAspectRatio: 0.63),
+            delegate: SliverChildBuilderDelegate((context, index) {
+              return !checkNowAndComing
+                  ? NowShowingMovieView(index,
+                      nowShowingMovies: nowShowingMovies,
+                      checkNowAndComing: checkNowAndComing)
+                  : ComingSoonMovieView(index,
+                      ComingSoonMovies: comingSoonMovies,
+                      checkNowAndComing: checkNowAndComing);
+            },
+                childCount: !checkNowAndComing
+                    ? nowShowingMovies.length
+                    : comingSoonMovies.length),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
+class ProfileWidget extends StatelessWidget {
+  ProfileWidget({
+    Key? key,
+  }) : super(key: key);
+
+  final profileTabs = [
+    ProfileTabList(Icons.history, "Purchae History"),
+    ProfileTabList(Icons.local_offer, "Offer"),
+    ProfileTabList(Icons.card_giftcard, "Gift Card"),
+    ProfileTabList(Icons.location_on_rounded, "Location"),
+    ProfileTabList(Icons.payment, "Payment"),
+    ProfileTabList(Icons.help, "Help and Support"),
+    ProfileTabList(Icons.logout, "Logout")
+  ];
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Container(
+        child: Column(
+          children: [
+            Stack(
+              children: [
+                Container(
+                  width: 414,
+                  height: 300,
+                  child: Image.asset("images/profilebg.png",fit: BoxFit.cover,),
+                ),
+                Positioned(
+                  top: 80,
+                  left: 150,
+                  child: Icon(
+                    Icons.account_circle,
+                    size: 100,
+                    color: PRIMARY_COLOR,
+                  ),
+                ),
+                Positioned(
+                  bottom: 40,
+                  left: 90,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: HOME_PAGE_PROFILE_BUTTON_COLOR,
+                      borderRadius: BorderRadius.circular(MARGIN_SMALL_8),
+                      border: Border.all(color: PRIMARY_COLOR),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: MARGIN_SMALL_2X,
+                        horizontal: MARGIN_MEDIUM_1X,
+                      ),
+                      child: Text(
+                        "Login or Signup Up",
+                        style: TextStyle(
+                            fontSize: TITLE_TEXT_FONT_SIZE,
+                            fontWeight: FontWeight.w600,
+                            color: PRIMARY_COLOR,
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+            Container(
+              height: 700,
+              margin: EdgeInsets.symmetric(
+                horizontal: MARGIN_SMALL_20,
+              ),
+              child: ListView.separated(
+                physics: NeverScrollableScrollPhysics(),
+                itemBuilder: (BuildContext context, int index) {
+                  return Container(
+                    margin: EdgeInsets.symmetric(vertical: MARGIN_SMALL_2X,),
+                    child: Row(
+                      children: [
+                        Container(
+                          child: Icon(profileTabs[index].icon,color: Colors.white,),
+                        ),
+                        SizedBox(width: MARGIN_SMALL_2X,),
+                        Text(
+                          profileTabs[index].text,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: TITLE_TEXT_FONT_SIZE),
+                        ),
+                        Spacer(),
+                        Icon(Icons.chevron_right,color: Colors.white,)
+                      ],
+                    ),
+                  );
+                },
+                itemCount: profileTabs.length,
+                separatorBuilder: (BuildContext context, int index) {
+                  return Divider(color: CHOOSE_CINEMA_PAGE_SERVICE_COLOR);
+                },
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CinemaLists extends StatelessWidget {
+  CinemaLists({
+    Key? key,
+  }) : super(key: key);
+
+  final cinemas = [
+    Cinema("JCGV Junction City"),
+    Cinema("JCGV City Mall"),
+    Cinema("Mingalar Cinema Gold Class"),
+    Cinema("Thamada Cinema"),
+    Cinema("Shae Saung Cinema"),
+    Cinema("Nawaday Cinema"),
+    Cinema("Thamada Cinema"),
+    Cinema("Shae Saung Cinema"),
+    Cinema("Nawaday Cinema")
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Container(
+        margin: EdgeInsets.symmetric(
+          horizontal: MARGIN_SMALL_3X,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+                margin: EdgeInsets.only(
+                  bottom: MARGIN_SMALL_2X,
+                ),
+                child: Text(
+                  "Cinemas",
+                  style: TextStyle(
+                      fontSize: LOGIN_SCREEN_MAIN_TEXT_SIZE,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white),
+                )),
+            Container(
+              height: 650,
+              child: ListView.separated(
+                scrollDirection: Axis.vertical,
+                itemBuilder: (BuildContext context, int index) {
+                  return Container(
+                    margin: EdgeInsets.symmetric(
+                      vertical: MARGIN_SMALL_16,
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              cinemas[index].CinemaName,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: MARGIN_SMALL_16,
+                                  color: Colors.white),
+                            ),
+                            Spacer(),
+                            Text(
+                              "See Details",
+                              style: TextStyle(
+                                  color: PRIMARY_COLOR,
+                                  decoration: TextDecoration.underline),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: MARGIN_SMALL_2X,
+                        ),
+                        Row(
+                          children: [
+                            CinemaServiceWidgets(
+                                Icons.local_parking_outlined, "Parking"),
+                            SizedBox(
+                              width: MARGIN_SMALL_1X,
+                            ),
+                            CinemaServiceWidgets(Icons.fastfood, "Online Food"),
+                            SizedBox(
+                              width: MARGIN_SMALL_1X,
+                            ),
+                            CinemaServiceWidgets(
+                                Icons.wheelchair_pickup, "Wheel Chair"),
+                          ],
+                        )
+                      ],
+                    ),
+                  );
+                },
+                itemCount: cinemas.length,
+                separatorBuilder: (BuildContext context, int index) {
+                  return Divider(
+                    color: CHOOSE_CINEMA_PAGE_SERVICE_COLOR,
+                  );
+                },
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CinemaServiceWidgets extends StatelessWidget {
+  const CinemaServiceWidgets(
+    this.serviceIcon,
+    this.serviceTitle, {
+    Key? key,
+  }) : super(key: key);
+
+  final IconData serviceIcon;
+  final String serviceTitle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Row(
+        children: [
+          Container(
+            width: 17,
+            height: 17,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border:
+                  Border.all(color: CHOOSE_CINEMA_PAGE_SERVICE_COLOR, width: 2),
+            ),
+            child: Icon(
+              serviceIcon,
+              size: 10,
+              color: CHOOSE_CINEMA_PAGE_SERVICE_COLOR,
+            ),
+          ),
+          SizedBox(
+            width: MARGIN_SMALL_1X,
+          ),
+          Text(
+            serviceTitle,
+            style: TextStyle(
+                color: CHOOSE_CINEMA_PAGE_SERVICE_COLOR,
+                fontSize: 13,
+                fontWeight: FontWeight.w500),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class TicketWidget extends StatelessWidget {
+  const TicketWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 22),
+      child: SingleChildScrollView(
+        child: Container(
+          height: 700,
+          child: ListView.builder(
+              itemCount: 4,
+              itemBuilder: (BuildContext context, int index) {
+                return GestureDetector(
+                    onTap: () {
+                      router(context, CancelBooking());
+                    },
+                    child: ReceiptWidget());
+              }),
+        ),
+      ),
+    );
+  }
+}
+
+class MoviesSearch extends SearchDelegate {
+  final bool checkNowAndComing;
+  final nowShowingMovies;
+  final comingSoonMovies;
+  MoviesSearch(this.checkNowAndComing,this.nowShowingMovies,this.comingSoonMovies);
+
+  @override
+  ThemeData appBarTheme(BuildContext context) {
+    return ThemeData(
+      appBarTheme: AppBarTheme(
+        elevation: 0.0,
+        color:BACKGROUND_COLOR,
+        titleSpacing: 30.0, // search bar width
+      ),
+      hintColor: TICKET_BG_TOP_COLOR,
+      textTheme: TextTheme(
+        headline6: TextStyle(
+          color: Colors.white,
+        )
+      )// affects the initial 'Search' text
+    );
+  }
+  @override
+  String get searchFieldLabel => SEARCHBARHINT;
+
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+    // TODO: implement buildActions
+    return [
+      Container(
+        child: IconButton(
+          icon: Icon(
+            Icons.filter_alt,
+            color: PRIMARY_COLOR,
+          ),
+          onPressed: () {},
+        ),
+      ),
+    ];
+  }
+
+  @override
+  Widget? buildLeading(BuildContext context) {
+    // TODO: implement buildLeading
+    return Container(
+      margin: EdgeInsets.only(left: MARGIN_SMALL_1X,),
+      child: Row(
+        children: [
+          BackToWidget(),
+          // Icon(Icons.search)
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    // TODO: implement buildResults
+    return Container(
+      color: BACKGROUND_COLOR,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: CustomScrollView(
+          scrollDirection: Axis.vertical,
+          slivers: [
             SliverGrid(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
@@ -140,54 +570,214 @@ class _HomePageState extends State<HomePage> {
                   childAspectRatio: 0.63),
               delegate: SliverChildBuilderDelegate((context, index) {
                 return !checkNowAndComing
-                    ? NowShowingMovieView(index,
-                        nowShowingMovies: nowShowingMovies, checkNowAndComing : checkNowAndComing)
-                    : ComingSoonMovieView(index,
-                        ComingSoonMovies: comingSoonMovies, checkNowAndComing : checkNowAndComing);
+                    ? NowShowingMovieView(0,
+                    nowShowingMovies: nowShowingMovies,
+                    checkNowAndComing: checkNowAndComing)
+                    : ComingSoonMovieView(0,
+                    ComingSoonMovies: comingSoonMovies,
+                    checkNowAndComing: checkNowAndComing);
               },
-                  childCount: !checkNowAndComing
-                      ? nowShowingMovies.length
-                      : comingSoonMovies.length),
+                  childCount: 1),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.movie),
-            label: 'Home',
-            backgroundColor: BACKGROUND_COLOR,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.place_outlined),
-            label: 'Business',
-            backgroundColor: BACKGROUND_COLOR,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.airplane_ticket_rounded),
-            label: 'Business',
-            backgroundColor: BACKGROUND_COLOR,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_off),
-            label: 'School',
-            backgroundColor: BACKGROUND_COLOR,
-          ),
-        ],
-        selectedItemColor: Colors.amber[800],
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    // TODO: implement buildSuggestions
+    return Container(
+      color: BACKGROUND_COLOR,
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: MARGIN_SMALL_2X,),
+        child: Row(
+          children: [
+            FilterWidget("Genres"),
+            SizedBox(width: MARGIN_SMALL_8 * 2,),
+            FilterWidget("Format"),
+            SizedBox(width: MARGIN_SMALL_8 * 2,),
+            Visibility(visible : checkNowAndComing, child: FilterWidget("Month")),
+          ],
+        ),
       ),
     );
   }
 }
 
-class NowShowingMovieView extends StatelessWidget {
-  const NowShowingMovieView(
-    this.index, {
+class FilterWidget extends StatelessWidget {
+  final String text;
+  FilterWidget(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 100,
+      height: 27,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(MARGIN_SMALL_8,),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: Row(
+          children: [
+            Text(text),
+            Icon(Icons.keyboard_arrow_down_rounded)
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CinemaSearch extends SearchDelegate {
+
+  @override
+  ThemeData appBarTheme(BuildContext context) {
+    return ThemeData(
+        appBarTheme: AppBarTheme(
+          elevation: 0.0,
+          color:BACKGROUND_COLOR,
+          titleSpacing: 20.0, // search bar width
+        ),
+        hintColor: TICKET_BG_TOP_COLOR,
+        textTheme: TextTheme(
+            headline6: TextStyle(
+              color: Colors.white,
+            )
+        )// affects the initial 'Search' text
+    );
+  }
+  @override
+  String get searchFieldLabel => SEARCHCINEMAHINT;
+
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+    // TODO: implement buildActions
+    return [
+      Container(
+        color: BACKGROUND_COLOR,
+        child: IconButton(
+          icon: Icon(
+            Icons.filter_alt,
+            color: PRIMARY_COLOR,
+          ),
+          onPressed: () {},
+        ),
+      ),
+    ];
+  }
+
+  @override
+  Widget? buildLeading(BuildContext context) {
+    // TODO: implement buildLeading
+    return Container(
+      margin: EdgeInsets.only(left: MARGIN_SMALL_1X,),
+      child: Row(
+        children: [
+          BackToWidget(),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    // TODO: implement buildResults
+    return Column();
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    // TODO: implement buildSuggestions
+    return Container(
+      color: BACKGROUND_COLOR,
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: MARGIN_SMALL_2X,horizontal: MARGIN_SMALL_20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                FilterWidget("Facilities"),
+                SizedBox(width: MARGIN_SMALL_8 * 2,),
+                FilterWidget("Format")
+              ],
+            ),
+            SizedBox(height: MARGIN_SMALL_30,),
+            PriceRangeWidget(),
+          ],
+        ),
+      ),
+    );
+
+  }
+}
+
+class PriceRangeWidget extends StatefulWidget {
+  const PriceRangeWidget({
     Key? key,
-    required this.nowShowingMovies,
-        required this.checkNowAndComing
   }) : super(key: key);
+
+  @override
+  State<PriceRangeWidget> createState() => _PriceRangeWidgetState();
+}
+
+class _PriceRangeWidgetState extends State<PriceRangeWidget> {
+
+  RangeValues values = RangeValues(3500.0, 29500.0);
+  @override
+  Widget build(BuildContext context) {
+    // RangeLabels labels = RangeLabels(values.start.toString(),values.end.toString());
+    return Container(
+      child: Column(
+        children: [
+          Text(PRICERANGE,style: TextStyle(fontSize: FONT_SIZE_14,fontWeight: FontWeight.w600,color: Colors.white),),
+          SizedBox(height: MARGIN_SMALL_20,),
+          Row(
+            children: [
+              RangeLabelWidget("3500Ks"),
+              Spacer(),
+              RangeLabelWidget("29500Ks"),
+            ],
+          ),
+          SizedBox(height: MARGIN_SMALL_20,),
+          Container(
+            child: RangeSlider(
+              values: values,
+              onChanged: (RangeValues value) {
+
+              },
+
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class RangeLabelWidget extends StatelessWidget {
+  final String text;
+  const RangeLabelWidget(this.text,{
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(text,style: TextStyle(fontWeight: FontWeight.w500,fontSize: FONT_SIZE_14,color: LOGIN_SCREEN_SUB_TXT_COLOR),);
+  }
+}
+
+class NowShowingMovieView extends StatelessWidget {
+  const NowShowingMovieView(this.index,
+      {Key? key,
+      required this.nowShowingMovies,
+      required this.checkNowAndComing})
+      : super(key: key);
 
   final List<String> nowShowingMovies;
   final int index;
@@ -197,8 +787,8 @@ class NowShowingMovieView extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-       // router(context, NowShowingMovieDetails());
-       //  print(checkNowAndComing);
+        // router(context, NowShowingMovieDetails());
+        //  print(checkNowAndComing);
         router(context, MovieDetails(checkNowAndComing));
       },
       child: Container(
@@ -315,7 +905,7 @@ class ComingSoonMovieView extends StatelessWidget {
     this.index, {
     Key? key,
     required this.ComingSoonMovies,
-        required this.checkNowAndComing,
+    required this.checkNowAndComing,
   }) : super(key: key);
 
   final List<String> ComingSoonMovies;
@@ -328,7 +918,7 @@ class ComingSoonMovieView extends StatelessWidget {
       onTap: () {
         print(checkNowAndComing);
         router(context, MovieDetails(checkNowAndComing));
-        },
+      },
       child: Container(
         child: Stack(
           children: [
@@ -353,10 +943,14 @@ class ComingSoonMovieView extends StatelessWidget {
                 width: 33,
                 height: 30,
                 decoration: BoxDecoration(
-                  color: PRIMARY_COLOR,
-                  borderRadius: BorderRadius.circular(8)
-                ),
-                child: Center(child: Text("8th AUG",style: TextStyle(fontSize: 10,fontWeight: FontWeight.w700),textAlign: TextAlign.center,)),
+                    color: PRIMARY_COLOR,
+                    borderRadius: BorderRadius.circular(8)),
+                child: Center(
+                    child: Text(
+                  "8th AUG",
+                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700),
+                  textAlign: TextAlign.center,
+                )),
               ),
             ),
             Container(
@@ -429,7 +1023,6 @@ class ComingSoonMovieView extends StatelessWidget {
     );
   }
 }
-
 
 class BannerCarouselView extends StatefulWidget {
   const BannerCarouselView({

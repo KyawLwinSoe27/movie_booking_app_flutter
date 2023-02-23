@@ -23,6 +23,8 @@ class _ChooseTimeAndCinemaState extends State<ChooseTimeAndCinema> {
   List<String> movieStation = [
     "JCGV : Junction City",
     "JCGV : City Mall",
+    "Mingalar Cinema Gold Class",
+    "JCGV : City Mall",
     "Mingalar Cinema Gold Class"
   ];
 
@@ -72,6 +74,7 @@ class _ChooseTimeAndCinemaState extends State<ChooseTimeAndCinema> {
         ],
       ),
       body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
         child: Column(
           children: [
             DateCardListsWidgetView(dateList: dateList),
@@ -99,7 +102,7 @@ class MovieShowTimeWidgets extends StatelessWidget {
       height: 1000,
       child: ListView.separated(
         scrollDirection: Axis.vertical,
-        itemCount: 3,
+        itemCount: movieStation.length,
         itemBuilder: (BuildContext context, int index) {
           return ExpansionTile(
             title: Text(
@@ -111,7 +114,7 @@ class MovieShowTimeWidgets extends StatelessWidget {
             ),
             trailing: Text("See Details",style: TextStyle(color: PRIMARY_COLOR,decoration: TextDecoration.underline)),
             subtitle: Container(
-              margin: EdgeInsets.only(top: 10),
+              margin: EdgeInsets.only(top: MARGIN_SMALL_2X),
               child: Row(
                 children: [
                   CinemaServiceWidgets(Icons.local_parking_outlined,"Parking"),
@@ -339,16 +342,23 @@ class MovieTypeListWidget extends StatelessWidget {
   }
 }
 
-class DateCardListsWidgetView extends StatelessWidget {
+class DateCardListsWidgetView extends StatefulWidget {
   const DateCardListsWidgetView({
     Key? key,
     required this.dateList,
   }) : super(key: key);
 
   final List<DateTime> dateList;
+
+  @override
+  State<DateCardListsWidgetView> createState() => _DateCardListsWidgetViewState();
+}
+
+class _DateCardListsWidgetViewState extends State<DateCardListsWidgetView> {
+  int selectedDate = 0;
   @override
   Widget build(BuildContext context) {
-    print(dateList.length);
+    print(widget.dateList.length);
     return Container(
       margin: EdgeInsets.symmetric(horizontal: MARGIN_SMALL_2X),
       height: 100,
@@ -359,38 +369,45 @@ class DateCardListsWidgetView extends StatelessWidget {
           return Padding(
             padding: EdgeInsets.only(right: 20),
             child: Stack(children: [
-              Container(
-                width: 71,
-                height: 95,
-                decoration: BoxDecoration(
-                  color: Color.fromRGBO(215, 215, 215, 1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        DateFormat("EEE").format(dateList[index]),
-                        style: TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w700),
-                      ),
-                      SizedBox(
-                        height: 7,
-                      ),
-                      Text(DateFormat.MMMM().format(dateList[index]),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedDate = index;
+                  });
+                },
+                child: Container(
+                  width: 71,
+                  height: 95,
+                  decoration: BoxDecoration(
+                    color: selectedDate == index ? PRIMARY_COLOR : Color.fromRGBO(215, 215, 215, 1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          DateFormat("EEE").format(widget.dateList[index]),
                           style: TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w700)),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      Text(dateList[index].day.toString(),
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w700)),
-                    ],
+                              fontSize: 14, fontWeight: FontWeight.w700),
+                        ),
+                        SizedBox(
+                          height: 7,
+                        ),
+                        Text(DateFormat.MMMM().format(widget.dateList[index]),
+                            style: TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.w700)),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Text(widget.dateList[index].day.toString(),
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w700)),
+                      ],
+                    ),
                   ),
                 ),
               ),

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:movie_booking_app/pages/checkout.dart';
+import 'package:movie_booking_app/pages/food_order_page.dart';
+import 'package:movie_booking_app/pages/payment.dart';
 import 'package:movie_booking_app/pages/seat_selection.dart';
 import 'package:movie_booking_app/pages/choose_time_and_cinema.dart';
 import 'package:movie_booking_app/pages/get_otp_page.dart';
@@ -6,6 +9,7 @@ import 'package:movie_booking_app/pages/home_page.dart';
 import 'package:movie_booking_app/pages/login_page.dart';
 import 'package:movie_booking_app/pages/logo_page.dart';
 import 'package:movie_booking_app/pages/movie_details.dart';
+import 'package:movie_booking_app/pages/ticket_confirm.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,7 +24,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      home:SeatSelectionPage(),
+      home:HomePage(),
     );
   }
 }

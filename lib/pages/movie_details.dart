@@ -46,46 +46,60 @@ class _MovieDetailsState extends State<MovieDetails> {
       "Comedy",
       "Animation",
     ];
-    List<String> movieViewTypes = [
-      "2D",
-      "3D",
-      "3D IMAGE"
-    ];
+    List<String> movieViewTypes = ["2D", "3D", "3D IMAGE"];
     return Scaffold(
       backgroundColor: BACKGROUND_COLOR,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            BannerSectionView(
-                flickManager: flickManager,
-                moviesChip: moviesChip,
-                movieViewTypes: movieViewTypes),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 17, vertical: 30),
-              child: Row(
-                children: [
-                  CRDWidgetView("Censor Rating", "U"),
-                  Spacer(),
-                  CRDWidgetView("Realease date", "AUG 8th, 2022"),
-                  Spacer(),
-                  CRDWidgetView("Duration", "2hr 15min")
-                ],
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                BannerSectionView(
+                    flickManager: flickManager,
+                    moviesChip: moviesChip,
+                    movieViewTypes: movieViewTypes),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 17, vertical: 30),
+                  child: Row(
+                    children: [
+                      CRDWidgetView("Censor Rating", "U"),
+                      Spacer(),
+                      CRDWidgetView("Realease date", "AUG 8th, 2022"),
+                      Spacer(),
+                      CRDWidgetView("Duration", "2hr 15min")
+                    ],
+                  ),
+                ), //Extract Widget
+                Visibility(
+                  visible: widget.checkNowAndComing,
+                  child: NotiReleaseWidgetView(),
+                ),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 17),
+                  child: StoryLineWidgetView(),
+                ),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 17, vertical: 20),
+                  child: CastWidgetView(
+                      checkNowAndComing: widget.checkNowAndComing),
+                ),
+              ],
+            ),
+          ),
+          Visibility(
+            visible: !widget.checkNowAndComing,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                margin: EdgeInsets.only(bottom: MARGIN_SMALL_20),
+                child: BookingButton(
+                  "Booking",
+                  ChooseTimeAndCinema(),
+                ),
               ),
             ),
-            Visibility(
-              visible: widget.checkNowAndComing,
-              child: NotiReleaseWidgetView(),
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 17),
-              child: StoryLineWidgetView(),
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 17, vertical: 20),
-              child: CastWidgetView(checkNowAndComing : widget.checkNowAndComing),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -207,52 +221,50 @@ class CastWidgetView extends StatelessWidget {
           height: MARGIN_SMALL_20,
         ),
         Container(
-          height: 150,
-          child: Stack(
-            children: [ListView.builder(
+          height: 300,
+          child: Container(
+            margin: EdgeInsets.only(
+              bottom: 30,
+            ),
+            child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: 10,
               itemBuilder: (BuildContext context, int index) {
                 return Container(
-                margin: EdgeInsets.only(right: 23,bottom: 50),
-                child: Column(
-                  children: [
-                    Container(
-                        width: 60,
-                        height: 60,
-                        child: CircleAvatar(
-                          backgroundImage: NetworkImage(
-                            "https://assets.rebelmouse.io/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpbWFnZSI6Imh0dHBzOi8vYXNzZXRzLnJibC5tcy8xMDI0OTAwNi9vcmlnaW4uanBnIiwiZXhwaXJlc19hdCI6MTcyNjAxMTg0MX0.X3x_k6E8WUGnrIWC98bMPfq99A3Rlibs0ar7VC7r4f4/img.jpg?width=1200&height=600&coordinates=0%2C106%2C0%2C504",
-                          ),
-                        )),
-                    SizedBox(
-                      height: 9,
-                    ),
-                    Text(
-                      "Katty\nas Monica",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
+                  margin: EdgeInsets.only(right: 23, bottom: 50),
+                  child: Column(
+                    children: [
+                      Container(
+                          width: 60,
+                          height: 60,
+                          child: CircleAvatar(
+                            backgroundImage: NetworkImage(
+                              "https://assets.rebelmouse.io/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpbWFnZSI6Imh0dHBzOi8vYXNzZXRzLnJibC5tcy8xMDI0OTAwNi9vcmlnaW4uanBnIiwiZXhwaXJlc19hdCI6MTcyNjAxMTg0MX0.X3x_k6E8WUGnrIWC98bMPfq99A3Rlibs0ar7VC7r4f4/img.jpg?width=1200&height=600&coordinates=0%2C106%2C0%2C504",
+                            ),
+                          )),
+                      SizedBox(
+                        height: 9,
                       ),
-                      textAlign: TextAlign.center,
-                    )
-
-                  ],
-                ),
-                  );
+                      Text(
+                        "Katty\nas Monica",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        textAlign: TextAlign.center,
+                      )
+                    ],
+                  ),
+                );
               },
             ),
-              Visibility(visible: !checkNowAndComing,child: BookingButton("Booking",ChooseTimeAndCinema())),
-            ]
           ),
         ),
       ],
     );
   }
 }
-
-
 
 class StoryLineWidgetView extends StatelessWidget {
   const StoryLineWidgetView({
@@ -416,4 +428,3 @@ class BannerSectionView extends StatelessWidget {
     );
   }
 }
-

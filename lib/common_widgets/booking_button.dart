@@ -6,10 +6,8 @@ import '../resources/colors.dart';
 class BookingButton extends StatelessWidget {
   final String text;
   final Widget widget;
-  const BookingButton(this.text,this.widget,{
-    Key? key,
-  }) : super(key: key);
-
+  final Color color;
+  const BookingButton(this.text,this.widget,[this.color = PRIMARY_COLOR]);
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -17,43 +15,45 @@ class BookingButton extends StatelessWidget {
         router(context, widget);
       },
       child: Container(
-          alignment: Alignment.bottomCenter,
-          child: Stack(
-              children: [Container(
-                width: 230,
-                height: 50,
+        width: 230,
+        height: 50,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: color,
+        ),
+        child: Row(
+          children: [
+            SizedBox(
+              height: 20,
+              width: 10,
+              child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: PRIMARY_COLOR,
-                  borderRadius: BorderRadius.circular(10),
+                  color: BACKGROUND_COLOR,
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(10),
+                    bottomRight: Radius.circular(10),
+                  ),
                 ),
-                child: Center(child: Text(text,style: TextStyle(fontSize: 16,fontWeight: FontWeight.w700),)),
               ),
-                Positioned(
-                  left: -10,
-                  top: 16,
-                  child: Container(
-                    width: 20,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: BACKGROUND_COLOR,
-                    ),
+            ),
+            Spacer(),
+            Text(text,style: TextStyle(fontSize: 16,fontWeight: FontWeight.w700,color: (color == PRIMARY_COLOR) ? Colors.black : Colors.white),),
+            Spacer(),
+            SizedBox(
+              height: 20,
+              width: 10,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: BACKGROUND_COLOR,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    bottomLeft: Radius.circular(10),
                   ),
                 ),
-                Positioned(
-                  right: -10,
-                  top: 16,
-                  child: Container(
-                    width: 20,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: BACKGROUND_COLOR,
-                    ),
-                  ),
-                ),
-              ]
-          )
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -41,6 +41,7 @@ dependencies:
   flick_video_player: ^0.5.0
   video_player: ^2.5.1
   intl: ^0.18.0
+  qr_flutter: ^4.0.0
 
 dev_dependencies:
   flutter_test:
@@ -77,6 +78,12 @@ flutter:
       - TakenChair.png
       - CoupleSeat.png
       - SelectedChair.png
+      - food.png
+      - movie_png_receipt.png
+      - Ballon.png
+      - home_cinema.png
+      - AvailableChair.png
+      - profilebg.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
