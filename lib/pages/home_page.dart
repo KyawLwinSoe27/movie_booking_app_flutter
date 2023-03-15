@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_booking_app/functions/reuse_functions.dart';
+import 'package:movie_booking_app/pages/cinema_details.dart';
 import 'package:movie_booking_app/pages/movie_details.dart';
 import 'package:movie_booking_app/resources/colors.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -13,9 +14,11 @@ import '../resources/strings.dart';
 import 'cancel_booking.dart';
 import './cinema_list.dart';
 import './profile_tab_list.dart';
+import './movie_search.dart';
+import 'cinema_search.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key? key}) : super(key: key);
+  const HomePage({Key? key}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -44,6 +47,17 @@ class _HomePageState extends State<HomePage> {
     "https://flxt.tmsimg.com/assets/p25765_p_v12_aj.jpg",
     "https://akamaividz2.zee5.com/image/upload/w_504,h_756,c_scale,f_webp,q_auto:eco/resources/0-0-1z5266206/portrait/1920x7707e5ac864fad243edba4af6583b84b115.jpg",
   ];
+  List<Cinema> cinemas = [
+    Cinema("JCGV Junction City"),
+    Cinema("JCGV City Mall"),
+    Cinema("Mingalar Cinema Gold Class"),
+    Cinema("Thamada Cinema"),
+    Cinema("Shae Saung Cinema"),
+    Cinema("Nawaday Cinema"),
+    Cinema("Thamada Cinema"),
+    Cinema("Shae Saung Cinema"),
+    Cinema("Nawaday Cinema")
+  ];
   bool checkNowAndComing = false;
   int _currentPage = 0;
 
@@ -53,43 +67,40 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: BACKGROUND_COLOR,
       appBar: _currentPage != 3
           ? AppBar(
-              elevation: 0.0,
+              elevation: ELEVATION,
               backgroundColor: BACKGROUND_COLOR,
-              leading: _currentPage == 0 ? Icon(Icons.near_me) : null,
-              title: _currentPage == 0 ? Text("Yangon") : null,
+              leading: _currentPage == 0 ? const Icon(Icons.near_me) : null,
+              title: _currentPage == 0 ? const Text("Yangon") : null,
               actions: _currentPage != 3
                   ? [
                       IconButton(
-                        icon: Icon(Icons.search),
+                        icon: const Icon(Icons.search),
                         onPressed: () {
-                          showSearch(
-                            context: context,
-                            delegate: _currentPage == 0 ? MoviesSearch(checkNowAndComing,nowShowingMovies,comingSoonMovies) :  CinemaSearch() ,
-                          );
+                          router(context, _currentPage == 0 ? MovieSearch(checkNowAndComing:checkNowAndComing, nowShowingMovies: nowShowingMovies,comingSoonMovies: comingSoonMovies,) :  CinemaSearch(cinemas) );
                         },
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: MARGIN_SMALL_30,
                       ),
-                      Icon(Icons.notifications),
-                      SizedBox(
+                      const Icon(Icons.notifications),
+                      const SizedBox(
                         width: MARGIN_SMALL_30,
                       ),
                       Container(
-                          padding: EdgeInsets.only(
+                          padding: const EdgeInsets.only(
                             right: MARGIN_SMALL_2X,
                           ),
-                          child: Icon(Icons.document_scanner_outlined))
+                          child: const Icon(Icons.document_scanner_outlined))
                     ]
                   : null,
             )
           : null,
       body: _currentPage == 0
-          ? Movies(context)
+          ? movies(context)
           : _currentPage == 1
-              ? CinemaLists()
+              ? CinemaLists(cinemas : cinemas)
               : _currentPage == 2
-                  ? TicketWidget()
+                  ? const TicketWidget()
                   : _currentPage == 3
                       ? ProfileWidget()
                       : null,
@@ -104,51 +115,51 @@ class _HomePageState extends State<HomePage> {
             _currentPage = index;
           });
         },
-        items: [
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.play_circle_sharp),
-            label: 'Movies',
+            label: BOTTOMNAVIGATION_INDEX_1,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.theaters),
-            label: 'Cinema',
+            label: BOTTOMNAVIGATION_INDEX_2,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.receipt),
-            label: 'Ticket',
+            label: BOTTOMNAVIGATION_INDEX_3,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),
-            label: 'Profile',
+            label: BOTTOMNAVIGATION_INDEX_4,
           ),
         ],
       ),
     );
   }
 
-  Container Movies(BuildContext context) {
+  Container movies(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: MARGIN_SMALL_20),
+      margin: const EdgeInsets.symmetric(horizontal: MARGIN_SMALL_20),
       child: CustomScrollView(
         scrollDirection: Axis.vertical,
         slivers: [
           SliverList(
             delegate: SliverChildListDelegate(
               [
-                BannerCarouselView(),
+                const BannerCarouselView(),
                 Column(
                   children: [
                     Container(
-                      margin: EdgeInsets.symmetric(
+                      margin: const EdgeInsets.symmetric(
                         vertical: MARGIN_SMALL_20,
                       ),
                       width: MediaQuery.of(context).size.width,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(MARGIN_SMALL_1X),
-                        gradient: RadialGradient(colors: [
+                        gradient: const RadialGradient(colors: [
                           HOME_PAGE_TAB_CENTER_BG,
                           HOME_PAGE_TAB_CORNER_BG
-                        ], radius: 5),
+                        ], radius: BORDER_RADIUS_2X),
                       ),
                       child: DefaultTabController(
                         initialIndex: 0,
@@ -174,12 +185,12 @@ class _HomePageState extends State<HomePage> {
                                 });
                               }
                             },
-                            tabs: [
+                            tabs: const [
                               Tab(
-                                text: 'Now Showing',
+                                text: NOWSHOWING_TAB,
                               ),
                               Tab(
-                                text: 'Coming Soon',
+                                text: COMINGSOON_TAB,
                               )
                             ],
                           ),
@@ -192,10 +203,10 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           SliverGrid(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                mainAxisSpacing: 21,
-                crossAxisSpacing: 21,
+                mainAxisSpacing: MARGIN_SMALL_20,
+                crossAxisSpacing: MARGIN_SMALL_20,
                 childAspectRatio: 0.63),
             delegate: SliverChildBuilderDelegate((context, index) {
               return !checkNowAndComing
@@ -233,139 +244,126 @@ class ProfileWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      child: Container(
-        child: Column(
-          children: [
-            Stack(
-              children: [
-                Container(
-                  width: 414,
-                  height: 300,
-                  child: Image.asset("images/profilebg.png",fit: BoxFit.cover,),
+      child: Column(
+        children: [
+          Stack(
+            children: [
+              SizedBox(
+                width: 414,
+                height: 300,
+                child: Image.asset("images/profilebg.png",fit: BoxFit.cover,),
+              ),
+              const Positioned(
+                top: 80,
+                left: 150,
+                child: Icon(
+                  Icons.account_circle,
+                  size: 100,
+                  color: PRIMARY_COLOR,
                 ),
-                Positioned(
-                  top: 80,
-                  left: 150,
-                  child: Icon(
-                    Icons.account_circle,
-                    size: 100,
-                    color: PRIMARY_COLOR,
+              ),
+              Positioned(
+                bottom: 40,
+                left: 90,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: HOME_PAGE_PROFILE_BUTTON_COLOR,
+                    borderRadius: BorderRadius.circular(MARGIN_SMALL_8),
+                    border: Border.all(color: PRIMARY_COLOR),
                   ),
-                ),
-                Positioned(
-                  bottom: 40,
-                  left: 90,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: HOME_PAGE_PROFILE_BUTTON_COLOR,
-                      borderRadius: BorderRadius.circular(MARGIN_SMALL_8),
-                      border: Border.all(color: PRIMARY_COLOR),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(
+                      vertical: MARGIN_SMALL_2X,
+                      horizontal: MARGIN_MEDIUM_1X,
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: MARGIN_SMALL_2X,
-                        horizontal: MARGIN_MEDIUM_1X,
-                      ),
-                      child: Text(
-                        "Login or Signup Up",
-                        style: TextStyle(
-                            fontSize: TITLE_TEXT_FONT_SIZE,
-                            fontWeight: FontWeight.w600,
-                            color: PRIMARY_COLOR,
-                        ),
+                    child: Text(
+                      "Login or Signup Up",
+                      style: TextStyle(
+                          fontSize: TITLE_TEXT_FONT_SIZE,
+                          fontWeight: FontWeight.w600,
+                          color: PRIMARY_COLOR,
                       ),
                     ),
                   ),
-                )
-              ],
+                ),
+              )
+            ],
+          ),
+          Container(
+            height: 700,
+            margin: const EdgeInsets.symmetric(
+              horizontal: MARGIN_SMALL_20,
             ),
-            Container(
-              height: 700,
-              margin: EdgeInsets.symmetric(
-                horizontal: MARGIN_SMALL_20,
-              ),
-              child: ListView.separated(
-                physics: NeverScrollableScrollPhysics(),
-                itemBuilder: (BuildContext context, int index) {
-                  return Container(
-                    margin: EdgeInsets.symmetric(vertical: MARGIN_SMALL_2X,),
-                    child: Row(
-                      children: [
-                        Container(
-                          child: Icon(profileTabs[index].icon,color: Colors.white,),
-                        ),
-                        SizedBox(width: MARGIN_SMALL_2X,),
-                        Text(
-                          profileTabs[index].text,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                              fontSize: TITLE_TEXT_FONT_SIZE),
-                        ),
-                        Spacer(),
-                        Icon(Icons.chevron_right,color: Colors.white,)
-                      ],
-                    ),
-                  );
-                },
-                itemCount: profileTabs.length,
-                separatorBuilder: (BuildContext context, int index) {
-                  return Divider(color: CHOOSE_CINEMA_PAGE_SERVICE_COLOR);
-                },
-              ),
-            )
-          ],
-        ),
+            child: ListView.separated(
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                  margin: const EdgeInsets.symmetric(vertical: MARGIN_SMALL_2X,),
+                  child: Row(
+                    children: [
+                      Icon(profileTabs[index].icon,color: Colors.white,),
+                      const SizedBox(width: MARGIN_SMALL_2X,),
+                      Text(
+                        profileTabs[index].text,
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: TITLE_TEXT_FONT_SIZE),
+                      ),
+                      const Spacer(),
+                      const Icon(Icons.chevron_right,color: Colors.white,)
+                    ],
+                  ),
+                );
+              },
+              itemCount: profileTabs.length,
+              separatorBuilder: (BuildContext context, int index) {
+                return const Divider(color: CHOOSE_CINEMA_PAGE_SERVICE_COLOR);
+              },
+            ),
+          )
+        ],
       ),
     );
   }
 }
 
 class CinemaLists extends StatelessWidget {
-  CinemaLists({
+  const CinemaLists({
     Key? key,
+    required this.cinemas
   }) : super(key: key);
 
-  final cinemas = [
-    Cinema("JCGV Junction City"),
-    Cinema("JCGV City Mall"),
-    Cinema("Mingalar Cinema Gold Class"),
-    Cinema("Thamada Cinema"),
-    Cinema("Shae Saung Cinema"),
-    Cinema("Nawaday Cinema"),
-    Cinema("Thamada Cinema"),
-    Cinema("Shae Saung Cinema"),
-    Cinema("Nawaday Cinema")
-  ];
+  final List<Cinema> cinemas;
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
-        margin: EdgeInsets.symmetric(
+        margin: const EdgeInsets.symmetric(
           horizontal: MARGIN_SMALL_3X,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-                margin: EdgeInsets.only(
+                margin: const EdgeInsets.only(
                   bottom: MARGIN_SMALL_2X,
                 ),
-                child: Text(
-                  "Cinemas",
+                child: const Text(
+                  CINEMAS,
                   style: TextStyle(
                       fontSize: LOGIN_SCREEN_MAIN_TEXT_SIZE,
                       fontWeight: FontWeight.w700,
                       color: Colors.white),
                 )),
-            Container(
+            SizedBox(
               height: 650,
               child: ListView.separated(
                 scrollDirection: Axis.vertical,
                 itemBuilder: (BuildContext context, int index) {
                   return Container(
-                    margin: EdgeInsets.symmetric(
+                    margin: const EdgeInsets.symmetric(
                       vertical: MARGIN_SMALL_16,
                     ),
                     child: Column(
@@ -374,36 +372,41 @@ class CinemaLists extends StatelessWidget {
                           children: [
                             Text(
                               cinemas[index].CinemaName,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: MARGIN_SMALL_16,
                                   color: Colors.white),
                             ),
-                            Spacer(),
-                            Text(
-                              "See Details",
-                              style: TextStyle(
-                                  color: PRIMARY_COLOR,
-                                  decoration: TextDecoration.underline),
+                            const Spacer(),
+                            GestureDetector(
+                              onTap: () {
+                                router(context, const CinemaDetails());
+                              },
+                              child: const Text(
+                                CINEMA_DETAILS,
+                                style: TextStyle(
+                                    color: PRIMARY_COLOR,
+                                    decoration: TextDecoration.underline),
+                              ),
                             ),
                           ],
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: MARGIN_SMALL_2X,
                         ),
                         Row(
-                          children: [
+                          children: const [
                             CinemaServiceWidgets(
-                                Icons.local_parking_outlined, "Parking"),
+                                Icons.local_parking_outlined, CINEMA_SERVICE_PARKING),
                             SizedBox(
                               width: MARGIN_SMALL_1X,
                             ),
-                            CinemaServiceWidgets(Icons.fastfood, "Online Food"),
+                            CinemaServiceWidgets(Icons.fastfood, CINEMA_SERVICE_FOOD),
                             SizedBox(
                               width: MARGIN_SMALL_1X,
                             ),
                             CinemaServiceWidgets(
-                                Icons.wheelchair_pickup, "Wheel Chair"),
+                                Icons.wheelchair_pickup, CINEMA_SERVICE_WHEEL_CHAIR),
                           ],
                         )
                       ],
@@ -412,7 +415,7 @@ class CinemaLists extends StatelessWidget {
                 },
                 itemCount: cinemas.length,
                 separatorBuilder: (BuildContext context, int index) {
-                  return Divider(
+                  return const Divider(
                     color: CHOOSE_CINEMA_PAGE_SERVICE_COLOR,
                   );
                 },
@@ -437,35 +440,33 @@ class CinemaServiceWidgets extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Row(
-        children: [
-          Container(
-            width: 17,
-            height: 17,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border:
-                  Border.all(color: CHOOSE_CINEMA_PAGE_SERVICE_COLOR, width: 2),
-            ),
-            child: Icon(
-              serviceIcon,
-              size: 10,
+    return Row(
+      children: [
+        Container(
+          width: CINEMA_SERVICE_WIDTH_HEIGHT,
+          height: CINEMA_SERVICE_WIDTH_HEIGHT,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border:
+                Border.all(color: CHOOSE_CINEMA_PAGE_SERVICE_COLOR, width: 2),
+          ),
+          child: Icon(
+            serviceIcon,
+            size: FONT_SIZE_10,
+            color: CHOOSE_CINEMA_PAGE_SERVICE_COLOR,
+          ),
+        ),
+        const SizedBox(
+          width: MARGIN_SMALL_1X,
+        ),
+        Text(
+          serviceTitle,
+          style: const TextStyle(
               color: CHOOSE_CINEMA_PAGE_SERVICE_COLOR,
-            ),
-          ),
-          SizedBox(
-            width: MARGIN_SMALL_1X,
-          ),
-          Text(
-            serviceTitle,
-            style: TextStyle(
-                color: CHOOSE_CINEMA_PAGE_SERVICE_COLOR,
-                fontSize: 13,
-                fontWeight: FontWeight.w500),
-          )
-        ],
-      ),
+              fontSize: FONT_SIZE_14,
+              fontWeight: FontWeight.w500),
+        )
+      ],
     );
   }
 }
@@ -478,128 +479,19 @@ class TicketWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 22),
+      margin: const EdgeInsets.symmetric(horizontal: 22),
       child: SingleChildScrollView(
-        child: Container(
+        child: SizedBox(
           height: 700,
           child: ListView.builder(
               itemCount: 4,
               itemBuilder: (BuildContext context, int index) {
                 return GestureDetector(
                     onTap: () {
-                      router(context, CancelBooking());
+                      router(context, const CancelBooking());
                     },
-                    child: ReceiptWidget());
+                    child: const ReceiptWidget());
               }),
-        ),
-      ),
-    );
-  }
-}
-
-class MoviesSearch extends SearchDelegate {
-  final bool checkNowAndComing;
-  final nowShowingMovies;
-  final comingSoonMovies;
-  MoviesSearch(this.checkNowAndComing,this.nowShowingMovies,this.comingSoonMovies);
-
-  @override
-  ThemeData appBarTheme(BuildContext context) {
-    return ThemeData(
-      appBarTheme: AppBarTheme(
-        elevation: 0.0,
-        color:BACKGROUND_COLOR,
-        titleSpacing: 30.0, // search bar width
-      ),
-      hintColor: TICKET_BG_TOP_COLOR,
-      textTheme: TextTheme(
-        headline6: TextStyle(
-          color: Colors.white,
-        )
-      )// affects the initial 'Search' text
-    );
-  }
-  @override
-  String get searchFieldLabel => SEARCHBARHINT;
-
-  @override
-  List<Widget>? buildActions(BuildContext context) {
-    // TODO: implement buildActions
-    return [
-      Container(
-        child: IconButton(
-          icon: Icon(
-            Icons.filter_alt,
-            color: PRIMARY_COLOR,
-          ),
-          onPressed: () {},
-        ),
-      ),
-    ];
-  }
-
-  @override
-  Widget? buildLeading(BuildContext context) {
-    // TODO: implement buildLeading
-    return Container(
-      margin: EdgeInsets.only(left: MARGIN_SMALL_1X,),
-      child: Row(
-        children: [
-          BackToWidget(),
-          // Icon(Icons.search)
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    // TODO: implement buildResults
-    return Container(
-      color: BACKGROUND_COLOR,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: CustomScrollView(
-          scrollDirection: Axis.vertical,
-          slivers: [
-            SliverGrid(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 21,
-                  crossAxisSpacing: 21,
-                  childAspectRatio: 0.63),
-              delegate: SliverChildBuilderDelegate((context, index) {
-                return !checkNowAndComing
-                    ? NowShowingMovieView(0,
-                    nowShowingMovies: nowShowingMovies,
-                    checkNowAndComing: checkNowAndComing)
-                    : ComingSoonMovieView(0,
-                    ComingSoonMovies: comingSoonMovies,
-                    checkNowAndComing: checkNowAndComing);
-              },
-                  childCount: 1),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    // TODO: implement buildSuggestions
-    return Container(
-      color: BACKGROUND_COLOR,
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: MARGIN_SMALL_2X,),
-        child: Row(
-          children: [
-            FilterWidget("Genres"),
-            SizedBox(width: MARGIN_SMALL_8 * 2,),
-            FilterWidget("Format"),
-            SizedBox(width: MARGIN_SMALL_8 * 2,),
-            Visibility(visible : checkNowAndComing, child: FilterWidget("Month")),
-          ],
         ),
       ),
     );
@@ -608,7 +500,7 @@ class MoviesSearch extends SearchDelegate {
 
 class FilterWidget extends StatelessWidget {
   final String text;
-  FilterWidget(this.text);
+  const FilterWidget(this.text, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -620,102 +512,58 @@ class FilterWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(MARGIN_SMALL_8,),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
+        padding: const EdgeInsets.symmetric(horizontal: MARGIN_SMALL_2X),
         child: Row(
           children: [
             Text(text),
-            Icon(Icons.keyboard_arrow_down_rounded)
+            const Icon(Icons.keyboard_arrow_down_rounded)
           ],
         ),
       ),
     );
   }
 }
-
-class CinemaSearch extends SearchDelegate {
-
-  @override
-  ThemeData appBarTheme(BuildContext context) {
-    return ThemeData(
-        appBarTheme: AppBarTheme(
-          elevation: 0.0,
-          color:BACKGROUND_COLOR,
-          titleSpacing: 20.0, // search bar width
-        ),
-        hintColor: TICKET_BG_TOP_COLOR,
-        textTheme: TextTheme(
-            headline6: TextStyle(
-              color: Colors.white,
-            )
-        )// affects the initial 'Search' text
-    );
-  }
-  @override
-  String get searchFieldLabel => SEARCHCINEMAHINT;
+class ShowTimesWidget extends StatefulWidget {
+  const ShowTimesWidget({Key? key}) : super(key: key);
 
   @override
-  List<Widget>? buildActions(BuildContext context) {
-    // TODO: implement buildActions
-    return [
-      Container(
-        color: BACKGROUND_COLOR,
-        child: IconButton(
-          icon: Icon(
-            Icons.filter_alt,
-            color: PRIMARY_COLOR,
-          ),
-          onPressed: () {},
-        ),
-      ),
-    ];
-  }
+  State<ShowTimesWidget> createState() => _ShowTimesWidgetState();
+}
+
+class _ShowTimesWidgetState extends State<ShowTimesWidget> {
+  RangeValues _currentRangeValues = const RangeValues(8, 12);
 
   @override
-  Widget? buildLeading(BuildContext context) {
-    // TODO: implement buildLeading
-    return Container(
-      margin: EdgeInsets.only(left: MARGIN_SMALL_1X,),
-      child: Row(
-        children: [
-          BackToWidget(),
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    // TODO: implement buildResults
-    return Column();
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    // TODO: implement buildSuggestions
-    return Container(
-      color: BACKGROUND_COLOR,
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: MARGIN_SMALL_2X,horizontal: MARGIN_SMALL_20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                FilterWidget("Facilities"),
-                SizedBox(width: MARGIN_SMALL_8 * 2,),
-                FilterWidget("Format")
-              ],
-            ),
-            SizedBox(height: MARGIN_SMALL_30,),
-            PriceRangeWidget(),
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(SHOW_TIMES,style: TextStyle(fontSize: FONT_SIZE_14,fontWeight: FontWeight.w600,color: Colors.white),),
+        const SizedBox(height: MARGIN_SMALL_20,),
+        Row(
+          children: const [
+            RangeLabelWidget("8am"),
+            Spacer(),
+            RangeLabelWidget("12pm"),
           ],
         ),
-      ),
+        const SizedBox(height: MARGIN_SMALL_1X,),
+        RangeSlider(
+          activeColor: PRIMARY_COLOR,
+          values: _currentRangeValues,
+          max: 50000.0,
+          onChanged: (RangeValues values) {
+            setState(() {
+              _currentRangeValues = values;
+            });
+            print(values);
+          },
+        )
+      ],
     );
-
   }
 }
+
 
 class PriceRangeWidget extends StatefulWidget {
   const PriceRangeWidget({
@@ -727,35 +575,35 @@ class PriceRangeWidget extends StatefulWidget {
 }
 
 class _PriceRangeWidgetState extends State<PriceRangeWidget> {
-
-  RangeValues values = RangeValues(3500.0, 29500.0);
+  RangeValues _currentRangeValues = const RangeValues(3500, 30000);
   @override
   Widget build(BuildContext context) {
     // RangeLabels labels = RangeLabels(values.start.toString(),values.end.toString());
-    return Container(
-      child: Column(
-        children: [
-          Text(PRICERANGE,style: TextStyle(fontSize: FONT_SIZE_14,fontWeight: FontWeight.w600,color: Colors.white),),
-          SizedBox(height: MARGIN_SMALL_20,),
-          Row(
-            children: [
-              RangeLabelWidget("3500Ks"),
-              Spacer(),
-              RangeLabelWidget("29500Ks"),
-            ],
-          ),
-          SizedBox(height: MARGIN_SMALL_20,),
-          Container(
-            child: RangeSlider(
-              values: values,
-              onChanged: (RangeValues value) {
-
-              },
-
-            ),
-          )
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(PRICERANGE,style: TextStyle(fontSize: FONT_SIZE_14,fontWeight: FontWeight.w600,color: Colors.white),),
+        const SizedBox(height: MARGIN_SMALL_20,),
+        Row(
+          children: const [
+            RangeLabelWidget("3500Ks"),
+            Spacer(),
+            RangeLabelWidget("29500Ks"),
+          ],
+        ),
+        const SizedBox(height: MARGIN_SMALL_1X,),
+        RangeSlider(
+          activeColor: PRIMARY_COLOR,
+          values: _currentRangeValues,
+          max: 50000.0,
+          onChanged: (RangeValues values) {
+            setState(() {
+              _currentRangeValues = values;
+            });
+            print(values);
+          },
+        )
+      ],
     );
   }
 }
@@ -768,7 +616,7 @@ class RangeLabelWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(text,style: TextStyle(fontWeight: FontWeight.w500,fontSize: FONT_SIZE_14,color: LOGIN_SCREEN_SUB_TXT_COLOR),);
+    return Text(text,style: const TextStyle(fontWeight: FontWeight.w500,fontSize: FONT_SIZE_14,color: LOGIN_SCREEN_SUB_TXT_COLOR),);
   }
 }
 
@@ -787,114 +635,110 @@ class NowShowingMovieView extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // router(context, NowShowingMovieDetails());
-        //  print(checkNowAndComing);
         router(context, MovieDetails(checkNowAndComing));
       },
-      child: Container(
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Image.network(
-                nowShowingMovies[index],
-                fit: BoxFit.fitHeight,
-              ),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.network(
+              nowShowingMovies[index],
+              fit: BoxFit.fitHeight,
             ),
-            Positioned.fill(
-                child: Container(
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      begin: Alignment.center,
-                      end: Alignment.bottomCenter,
-                      colors: [Colors.transparent, BACKGROUND_COLOR])),
-            )),
-            Container(
-              margin: EdgeInsets.only(bottom: 20, left: 7, right: 7),
-              alignment: Alignment.bottomCenter,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        "Venom II",
-                        style: TextStyle(
-                            fontSize: FONT_SIZE_12,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white),
-                      ),
-                      Spacer(),
-                      Row(
-                        children: [
-                          Container(
-                            width: 30,
-                            height: 18,
-                            decoration: BoxDecoration(
-                                color: Colors.amber,
-                                borderRadius: BorderRadius.circular(3)),
-                            child: Center(
-                                child: Text(
-                              "IMDb",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black),
-                            )),
-                          ),
-                          SizedBox(
-                            width: 0.9,
-                          ),
-                          Text(
-                            "9.0",
+          ),
+          Positioned.fill(
+              child: Container(
+            decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.center,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, BACKGROUND_COLOR])),
+          )),
+          Container(
+            margin: const EdgeInsets.only(bottom: 20, left: 7, right: 7),
+            alignment: Alignment.bottomCenter,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    const Text(
+                      "Venom II",
+                      style: TextStyle(
+                          fontSize: FONT_SIZE_12,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white),
+                    ),
+                    const Spacer(),
+                    Row(
+                      children: [
+                        Container(
+                          width: 30,
+                          height: 18,
+                          decoration: BoxDecoration(
+                              color: Colors.amber,
+                              borderRadius: BorderRadius.circular(BORDER_RADIUS_3)),
+                          child: const Center(
+                              child: Text(
+                            "IMDb",
+                            textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 12,
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        "9.0",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700),
-                      ),
-                      SizedBox(
-                        width: 8,
-                      ),
-                      Text(
-                        ".",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        "2D,3D,3D IMAX",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            )
-          ],
-        ),
+                                fontSize: FONT_SIZE_12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
+                          )),
+                        ),
+                        const SizedBox(
+                          width: 1.0,
+                        ),
+                        const Text(
+                          "9.0",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 12,
+                ),
+                Row(
+                  children: const [
+                    Text(
+                      "9.0",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700),
+                    ),
+                    SizedBox(
+                      width: 8,
+                    ),
+                    Text(
+                      ".",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      "2D,3D,3D IMAX",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
@@ -919,106 +763,104 @@ class ComingSoonMovieView extends StatelessWidget {
         print(checkNowAndComing);
         router(context, MovieDetails(checkNowAndComing));
       },
-      child: Container(
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Image.network(
-                ComingSoonMovies[index],
-                fit: BoxFit.fitHeight,
-              ),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.network(
+              ComingSoonMovies[index],
+              fit: BoxFit.fitHeight,
             ),
-            Positioned.fill(
-                child: Container(
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      begin: Alignment.center,
-                      end: Alignment.bottomCenter,
-                      colors: [Colors.transparent, BACKGROUND_COLOR])),
-            )),
-            Align(
-              alignment: Alignment.topRight,
+          ),
+          Positioned.fill(
               child: Container(
-                margin: EdgeInsets.symmetric(horizontal: 8.5, vertical: 7),
-                width: 33,
-                height: 30,
-                decoration: BoxDecoration(
-                    color: PRIMARY_COLOR,
-                    borderRadius: BorderRadius.circular(8)),
-                child: Center(
-                    child: Text(
-                  "8th AUG",
-                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700),
-                  textAlign: TextAlign.center,
-                )),
-              ),
+            decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.center,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, BACKGROUND_COLOR])),
+          )),
+          Align(
+            alignment: Alignment.topRight,
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: MARGIN_SMALL_8, vertical: MARGIN_SMALL_8),
+              width: 33,
+              height: 30,
+              decoration: BoxDecoration(
+                  color: PRIMARY_COLOR,
+                  borderRadius: BorderRadius.circular(BORDER_RADIUS_2X)),
+              child: const Center(
+                  child: Text(
+                "8th AUG",
+                style: TextStyle(fontSize: FONT_SIZE_10, fontWeight: FontWeight.w700),
+                textAlign: TextAlign.center,
+              )),
             ),
-            Container(
-              margin: EdgeInsets.only(bottom: 20, left: 7, right: 7),
-              alignment: Alignment.bottomCenter,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        "Venom II",
-                        style: TextStyle(
-                            fontSize: FONT_SIZE_12,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white),
-                      ),
-                      Spacer(),
-                      Row(
-                        children: [
-                          IMDbWidgetView(),
-                          SizedBox(
-                            width: 0.9,
-                          ),
-                          RatingWidgetView("7.1"),
-                        ],
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 12,
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        "9.0",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700),
-                      ),
-                      SizedBox(
-                        width: 8,
-                      ),
-                      Text(
-                        ".",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        "2D,3D,3D IMAX",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            )
-          ],
-        ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(bottom: MARGIN_SMALL_20, left: MARGIN_SMALL_8, right: MARGIN_SMALL_8),
+            alignment: Alignment.bottomCenter,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    const Text(
+                      "Venom II",
+                      style: TextStyle(
+                          fontSize: FONT_SIZE_12,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white),
+                    ),
+                    const Spacer(),
+                    Row(
+                      children: const [
+                        IMDbWidgetView(),
+                        SizedBox(
+                          width: 1.0,
+                        ),
+                        RatingWidgetView("7.1"),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: MARGIN_SMALL_2X,
+                ),
+                Row(
+                  children: const [
+                    Text(
+                      "9.0",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: FONT_SIZE_12,
+                          fontWeight: FontWeight.w700),
+                    ),
+                    SizedBox(
+                      width: MARGIN_SMALL_8,
+                    ),
+                    Text(
+                      ".",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: FONT_SIZE_12,
+                          fontWeight: FontWeight.w700),
+                    ),
+                    SizedBox(
+                      width: MARGIN_SMALL_2X,
+                    ),
+                    Text(
+                      "2D,3D,3D IMAX",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
@@ -1049,7 +891,7 @@ class _BannerCarouselViewState extends State<BannerCarouselView> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
+        SizedBox(
           width: 370,
           height: 170,
           child: CarouselSlider(
@@ -1064,133 +906,129 @@ class _BannerCarouselViewState extends State<BannerCarouselView> {
               enlargeCenterPage: true,
             ),
             items: imgList
-                .map((item) => Container(
-                      child: Container(
-                        child: ClipRRect(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(5.0)),
-                            child: Stack(
-                              children: <Widget>[
-                                Image.network(item,
-                                    fit: BoxFit.cover, width: 1000.0),
-                                Positioned(
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          Color.fromRGBO(0, 0, 1, 1.0),
-                                          Colors.transparent,
-                                        ],
-                                        begin: Alignment.centerLeft,
-                                        end: Alignment.centerRight,
+                .map((item) => ClipRRect(
+                    borderRadius:
+                        const BorderRadius.all(Radius.circular(BORDER_RADIUS_5)),
+                    child: Stack(
+                      children: <Widget>[
+                        Image.network(item,
+                            fit: BoxFit.cover, width: 1000.0),
+                        Positioned(
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Color.fromRGBO(0, 0, 1, 1.0),
+                                  Colors.transparent,
+                                ],
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                top: MARGIN_SMALL_16,
+                                left: MARGIN_SMALL_20),
+                            child: Column(
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                              children: [
+                                RichText(
+                                  text: const TextSpan(children: [
+                                    TextSpan(
+                                      text: "10%",
+                                      style: TextStyle(
+                                        fontSize:
+                                            HOME_PAGE_BANNER_DISCOUNT_PERCENT,
+                                        fontWeight: FontWeight.w700,
+                                        letterSpacing: 0.3,
                                       ),
                                     ),
-                                  ),
-                                ),
-                                Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Padding(
-                                    padding: EdgeInsets.only(
-                                        top: MARGIN_SMALL_16,
-                                        left: MARGIN_SMALL_16 + 2),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        RichText(
-                                          text: TextSpan(children: [
-                                            TextSpan(
-                                              text: "10%",
-                                              style: TextStyle(
-                                                fontSize:
-                                                    HOME_PAGE_BANNER_DISCOUNT_PERCENT,
-                                                fontWeight: FontWeight.w700,
-                                                letterSpacing: 0.3,
-                                              ),
-                                            ),
-                                            WidgetSpan(
-                                              child: Padding(
-                                                padding: const EdgeInsets.only(
-                                                  right: MARGIN_SMALL_1X,
-                                                ),
-                                              ),
-                                            ),
-                                            TextSpan(
-                                              text: "off",
-                                              style: TextStyle(
-                                                  fontSize:
-                                                      TITLE_TEXT_FONT_SIZE,
-                                                  fontWeight: FontWeight.w600,
-                                                  letterSpacing: 0.3),
-                                            ),
-                                          ]),
+                                    WidgetSpan(
+                                      child: Padding(
+                                        padding: EdgeInsets.only(
+                                          right: MARGIN_SMALL_1X,
                                         ),
-                                        RichText(
-                                          text: TextSpan(children: [
-                                            TextSpan(
-                                              text: "with",
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w700,
-                                              ),
-                                            ),
-                                            WidgetSpan(
-                                              child: Padding(
-                                                padding: const EdgeInsets.only(
-                                                  right: MARGIN_SMALL_1X,
-                                                ),
-                                              ),
-                                            ),
-                                            TextSpan(
-                                                text: "KBZ",
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      TITLE_TEXT_FONT_SIZE,
-                                                  fontWeight: FontWeight.w700,
-                                                )),
-                                            WidgetSpan(
-                                              child: Padding(
-                                                padding: const EdgeInsets.only(
-                                                  right: MARGIN_SMALL_1X,
-                                                ),
-                                              ),
-                                            ),
-                                            TextSpan(
-                                                text: "debit card",
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w700,
-                                                )),
-                                          ]),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                Align(
-                                  alignment: Alignment.bottomLeft,
-                                  child: Padding(
-                                    padding: EdgeInsets.only(
-                                        left: MARGIN_SMALL_16 + 2,
-                                        bottom: MARGIN_SMALL_16 - 1),
-                                    child: Container(
-                                      width: 93,
-                                      height: 62,
-                                      child: Image.asset(
-                                        "images/Credit_Card.png",
-                                        fit: BoxFit.cover,
                                       ),
                                     ),
-                                  ),
-                                )
+                                    TextSpan(
+                                      text: "off",
+                                      style: TextStyle(
+                                          fontSize:
+                                              TITLE_TEXT_FONT_SIZE,
+                                          fontWeight: FontWeight.w600,
+                                          letterSpacing: 0.3),
+                                    ),
+                                  ]),
+                                ),
+                                RichText(
+                                  text: const TextSpan(children: [
+                                    TextSpan(
+                                      text: "with",
+                                      style: TextStyle(
+                                        fontSize: FONT_SIZE_14,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    WidgetSpan(
+                                      child: Padding(
+                                        padding: EdgeInsets.only(
+                                          right: MARGIN_SMALL_1X,
+                                        ),
+                                      ),
+                                    ),
+                                    TextSpan(
+                                        text: "KBZ",
+                                        style: TextStyle(
+                                          fontSize:
+                                              TITLE_TEXT_FONT_SIZE,
+                                          fontWeight: FontWeight.w700,
+                                        )),
+                                    WidgetSpan(
+                                      child: Padding(
+                                        padding: EdgeInsets.only(
+                                          right: MARGIN_SMALL_1X,
+                                        ),
+                                      ),
+                                    ),
+                                    TextSpan(
+                                        text: "debit card",
+                                        style: TextStyle(
+                                          fontSize: FONT_SIZE_14,
+                                          fontWeight: FontWeight.w700,
+                                        )),
+                                  ]),
+                                ),
                               ],
-                            )),
-                      ),
-                    ))
+                            ),
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.bottomLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: MARGIN_SMALL_20,
+                                bottom: MARGIN_SMALL_16),
+                            child: SizedBox(
+                              width: 93,
+                              height: 62,
+                              child: Image.asset(
+                                "images/Credit_Card.png",
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    )))
                 .toList(),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: MARGIN_SMALL_2X,
         ),
         Row(
@@ -1199,18 +1037,18 @@ class _BannerCarouselViewState extends State<BannerCarouselView> {
             return GestureDetector(
               onTap: () => _controller.animateToPage(entry.key),
               child: Container(
-                  width: 8.0,
-                  height: 8.0,
-                  margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                  width: MARGIN_SMALL_8,
+                  height: MARGIN_SMALL_8,
+                  margin: const EdgeInsets.symmetric(vertical: MARGIN_SMALL_8, horizontal: MARGIN_SMALL_1X),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     boxShadow: [
                       position == entry.key
-                          ? BoxShadow(
+                          ? const BoxShadow(
                               color: PRIMARY_COLOR,
                               blurRadius: 5.0,
                               spreadRadius: 2.0)
-                          : BoxShadow(),
+                          : const BoxShadow(),
                     ],
                     color: position == entry.key
                         ? PRIMARY_COLOR

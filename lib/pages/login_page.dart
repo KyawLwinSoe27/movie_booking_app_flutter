@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:movie_booking_app/common_widgets/logo_widgets.dart';
+import 'package:movie_booking_app/data/models/movie_booking_model.dart';
+import 'package:movie_booking_app/data/models/movie_booking_model_impl.dart';
+import 'package:movie_booking_app/data/vos/authentication_vo.dart';
 import 'package:movie_booking_app/functions/reuse_functions.dart';
 import 'package:movie_booking_app/pages/get_otp_page.dart';
 import '../common_widgets/terms_and_policy_widget.dart';
@@ -9,103 +12,118 @@ import '../resources/dimensions.dart';
 import '../resources/strings.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
+
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
+  MovieBookingModel movieBookingModel = MovieBookingModelImpl();
+
+  //State Variable
+  // AuthenticationVO? inputPhoneNumber;
+
+  @override
+  void initState() {
+    movieBookingModel.postPhoneNumber(int.parse(phoneNumber));
+    // TODO: implement initState
+    super.initState();
+  }
+
+
   String phoneNumber = "";
   @override
   Widget build(BuildContext context) {
+    // print(phoneNumber.replaceAll("+95", "0"));
     return Scaffold(
       backgroundColor: BACKGROUND_COLOR,
       body: ListView(children: [
         Center(
           child: Container(
-            margin: EdgeInsets.only(left: MARGIN_SMALL_4X, right: MARGIN_SMALL_4X, top: MARGIN_MEDIUM_2X),
+            margin: const EdgeInsets.only(left: MARGIN_SMALL_4X, right: MARGIN_SMALL_4X, top: MARGIN_MEDIUM_2X),
             child: Column(
               children: [
-                LogoWidget(),
-                SizedBox(
+                const LogoWidget(),
+                const SizedBox(
                   height: MARGIN_LARGE,
                 ),
-                Verify_Phone_Number_Text_Widget(),
-                SizedBox(
+                const VerifyPhoneNumberTextWidget(),
+                const SizedBox(
                   height: MARGIN_SMALL_2X,
                 ),
-                Send_Code_Info_Text_Widget(),
-                SizedBox(
+                const SendCodeInfoTextWidget(),
+                const SizedBox(
                   height: MARGIN_LARGE,
                 ),
-                Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Country Code",
-                        style: TextStyle(
-                            color: LOGIN_SCREEN_SUB_TXT_COLOR, fontSize: 12),
-                      ),
-                      Stack(
-                        children: [
-                          InternationalPhoneNumberInput(
-                            onInputChanged: (value) {
-                              setState(() {
-                                phoneNumber = value.phoneNumber!;
-                              });
-                            },
-                            autoValidateMode: AutovalidateMode.onUserInteraction,
-                            countrySelectorScrollControlled: true,
-                            validator: (value) {
-                              if(value!.isEmpty){
-                                return "Please Enter a phone Number";
-                              }else if(value.length != 12) {
-                                return "Enter a valid phone number";
-                              }
-                            },
-                            selectorConfig: SelectorConfig(
-                              selectorType: PhoneInputSelectorType.DIALOG,
-                              showFlags: false,
-                            ),
-                            selectorTextStyle: TextStyle(color: Colors.white),
-                            inputDecoration: InputDecoration(
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Colors.white,
-                                ),
-                              ),
-                              hintText: "Mobile Phone Number",
-                              hintStyle: TextStyle(
-                                color: LOGIN_SCREEN_SUB_TXT_COLOR,
-                                fontSize: 16,
-                              ),
-                            ),
-                            textStyle: TextStyle(
-                              color: Colors.white,
-                            ),
-                            spaceBetweenSelectorAndTextField: 20,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Country Code",
+                      style: TextStyle(
+                          color: LOGIN_SCREEN_SUB_TXT_COLOR, fontSize: 12),
+                    ),
+                    Stack(
+                      children: [
+                        InternationalPhoneNumberInput(
+                          onInputChanged: (value) {
+                            setState(() {
+                              phoneNumber = value.phoneNumber!;
+                            });
+                          },
+                          autoValidateMode: AutovalidateMode.onUserInteraction,
+                          countrySelectorScrollControlled: true,
+                          validator: (value) {
+                            if(value!.isEmpty){
+                              return "Please Enter a phone Number";
+                            }else if(value.length != 12) {
+                              return "Enter a valid phone number";
+                            }
+                          },
+                          selectorConfig: const SelectorConfig(
+                            selectorType: PhoneInputSelectorType.DIALOG,
+                            showFlags: false,
                           ),
-                        ],
-                      )
-                    ],
-                  ),
+                          selectorTextStyle: const TextStyle(color: Colors.white),
+                          inputDecoration: const InputDecoration(
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.white,
+                              ),
+                            ),
+                            hintText: "Mobile Phone Number",
+                            hintStyle: TextStyle(
+                              color: LOGIN_SCREEN_SUB_TXT_COLOR,
+                              fontSize: 16,
+                            ),
+                          ),
+                          textStyle: const TextStyle(
+                            color: Colors.white,
+                          ),
+                          spaceBetweenSelectorAndTextField: 20,
+                        ),
+                      ],
+                    )
+                  ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: MARGIN_SMALL_4X,
                 ),
                 VerifyYourPhoneNumber(phoneNumber),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
-                DividerWidget(),
-                SizedBox(
+                const DividerWidget(),
+                const SizedBox(
                   height: 20,
                 ),
-                ContinueWithGoogleButton(),
-                SizedBox(
+                const ContinueWithGoogleButton(),
+                const SizedBox(
                   height: 90,
                 ),
-                TermsAndPolicyWidget(),
+                const TermsAndPolicyWidget(),
               ],
             ),
           ),
@@ -130,19 +148,19 @@ class ContinueWithGoogleButton extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),
-      padding: EdgeInsets.symmetric(vertical: 15, horizontal: 50),
+      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 50),
       minWidth: double.infinity,
       child: Row(
         children: [
-          Container(
+          SizedBox(
             width: 25,
             height: 25,
             child: Image.asset("images/Google.png"),
           ),
-          SizedBox(
+          const SizedBox(
             width: MARGIN_SMALL_2X,
           ),
-          Text(
+          const Text(
             CONTINUE_WITH_GOOGLE,
             style: TextStyle(fontSize: 16),
           ),
@@ -163,20 +181,20 @@ class DividerWidget extends StatelessWidget {
       children: [
         Expanded(
           child: Container(
-            margin: EdgeInsets.only(right: 20),
-            child: Divider(
+            margin: const EdgeInsets.only(right: 20),
+            child: const Divider(
               color: Colors.white,
             ),
           ),
         ),
-        Text(
+        const Text(
           "OR",
           style: TextStyle(color: Colors.white),
         ),
         Expanded(
           child: Container(
-            margin: EdgeInsets.only(left: 20),
-            child: Divider(
+            margin: const EdgeInsets.only(left: 20),
+            child: const Divider(
               color: Colors.white,
             ),
           ),
@@ -189,42 +207,41 @@ class DividerWidget extends StatelessWidget {
 
 class VerifyYourPhoneNumber extends StatelessWidget {
   final String phoneNumber;
-  VerifyYourPhoneNumber(this.phoneNumber);
+  VerifyYourPhoneNumber(this.phoneNumber, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: MaterialButton(
+    return MaterialButton(
       onPressed: () {
-        if(phoneNumber.isNotEmpty && phoneNumber.startsWith("+95") && phoneNumber.length == 13){
-          router(context, GetOTPPage());
-        }
+    if(phoneNumber.isNotEmpty && phoneNumber.startsWith("+95") && phoneNumber.length == 13){
+      router(context, GetOTPPage());
+    }
       },
       color: PRIMARY_COLOR,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
+    borderRadius: BorderRadius.circular(8),
       ),
       padding: EdgeInsets.symmetric(
-        vertical: 15,
-        horizontal: 60,
+    vertical: 15,
+    horizontal: 60,
       ),
       minWidth: double.infinity,
       child: Text(
-        VERIFY_YOUR_PHONE_NUMBER_BUTTON,
-        style: TextStyle(color: Colors.black),
+    VERIFY_YOUR_PHONE_NUMBER_BUTTON,
+    style: TextStyle(color: Colors.black),
       ),
-    ));
+    );
   }
 }
 
-class Send_Code_Info_Text_Widget extends StatelessWidget {
-  const Send_Code_Info_Text_Widget({
+class SendCodeInfoTextWidget extends StatelessWidget {
+  const SendCodeInfoTextWidget({
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return const SizedBox(
       width: 202,
       height: 36,
       child: Text(
@@ -238,10 +255,12 @@ class Send_Code_Info_Text_Widget extends StatelessWidget {
   }
 }
 
-class Verify_Phone_Number_Text_Widget extends StatelessWidget {
+class VerifyPhoneNumberTextWidget extends StatelessWidget {
+  const VerifyPhoneNumberTextWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Text(
+    return const Text(
       LOGIN_SCREEN_MAIN_TEXT,
       style: TextStyle(
         color: Colors.white,

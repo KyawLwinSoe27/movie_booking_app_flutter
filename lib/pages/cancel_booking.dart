@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movie_booking_app/common_widgets/appbar_title.dart';
 import 'package:movie_booking_app/common_widgets/booking_button.dart';
 import 'package:movie_booking_app/pages/payment.dart';
 
@@ -21,12 +22,7 @@ class CancelBooking extends StatelessWidget {
         backgroundColor: BACKGROUND_COLOR,
         leading: BackToWidget(),
         centerTitle: true,
-        title: Text(
-          CANCEL_BOOKING_TITLE_TEXT,
-          style: TextStyle(
-              fontSize: LOGIN_SCREEN_MAIN_TEXT_SIZE,
-              fontWeight: FontWeight.w700),
-        ),
+        title: AppBarTitle(CANCEL_BOOKING_TITLE_TEXT),
       ),
       body: Container(
         child: Column(

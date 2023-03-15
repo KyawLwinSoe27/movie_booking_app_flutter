@@ -19,7 +19,27 @@ const SEARCHBARHINT = "Search the movie";
 const SEARCHCINEMAHINT = "Search the cinema";
 
 const PRICERANGE = "Price Range";
+const SHOW_TIMES = "Show Times";
 
+const NOWSHOWING_TAB = "Now Showing";
+const COMINGSOON_TAB = "Coming Soon";
+
+const CINEMAS = "Cinemas";
+
+const GENRES = "Genres";
+const FORMAT = "Format";
+const MONTH = "Month";
+
+//BOTTOM NAVIGATION
+const BOTTOMNAVIGATION_INDEX_1 = "Movies";
+const BOTTOMNAVIGATION_INDEX_2 = "Cinema";
+const BOTTOMNAVIGATION_INDEX_3 = "Ticket";
+const BOTTOMNAVIGATION_INDEX_4 = "Profile";
+
+//CINEMA DETAILS SCREEN
+const APPBARTITLECINEMADETAILS = "Cinema Details";
+const FACILITY = "Facilities";
+const SAFETY = "Safety";
 
 //FOOD ORDER PAGE
 const TITLE_TEXT = "Grab a bite!";
@@ -37,3 +57,9 @@ const PAYMENT_OFFER_BUTTON_TEXT = "Unlock Offer or Apply Promocode";
 const CANCEL_BOOKING_TITLE_TEXT = "Ticekt Details";
 const BUTTON_TEXT = "Cancel Booking";
 const CANCEL_BOOKING_REFUNDT_TEXT = "Refund Amount";
+
+//CINEMA SERVICE
+const CINEMA_SERVICE_PARKING = "Parking";
+const CINEMA_SERVICE_FOOD = "Online Food";
+const CINEMA_SERVICE_WHEEL_CHAIR = "Wheel Chair";
+const CINEMA_DETAILS = "See Details";

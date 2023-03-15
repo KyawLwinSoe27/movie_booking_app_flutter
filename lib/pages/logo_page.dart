@@ -10,18 +10,21 @@ import 'package:movie_booking_app/resources/strings.dart';
 import '../common_widgets/logo_widgets.dart';
 
 class LogoPage extends StatefulWidget {
+  const LogoPage({super.key});
+
   @override
   State<LogoPage> createState() => _LogoPageState();
 }
 
 class _LogoPageState extends State<LogoPage> {
+  @override
   void initState() {
     super.initState();
     startTime();
   }
 
   startTime() async {
-    var duration = new Duration(seconds: 5);
+    var duration = const Duration(seconds: 5);
     return Timer(duration, () {
       router(context, LoginPage());
     });
@@ -35,7 +38,7 @@ class _LogoPageState extends State<LogoPage> {
           child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+        children: const [
           LogoWidget(),
           SizedBox(
             height: MARGIN_SMALL_2X,
@@ -55,7 +58,7 @@ class LogoScreenTextWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RichText(
-      text: TextSpan(
+      text: const TextSpan(
           style: TextStyle(
             fontSize: LOGO_TXT_FONT_SIZE,
             fontWeight: FontWeight.w600,
@@ -67,7 +70,7 @@ class LogoScreenTextWidget extends StatelessWidget {
             ),
             WidgetSpan(
               child: Padding(
-                padding: const EdgeInsets.only(
+                padding: EdgeInsets.only(
                   right: MARGIN_SMALL_1X,
                 ),
               ),

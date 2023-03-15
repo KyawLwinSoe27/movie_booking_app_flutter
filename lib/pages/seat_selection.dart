@@ -173,9 +173,11 @@ class _SeatSelectionPageState extends State<SeatSelectionPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     SeatConditionWidget(),
+                    SizedBox(height: MARGIN_SMALL_20,),
                     ZoomWidget(),
+                    SizedBox(height: MARGIN_SMALL_20,),
                     Container(
-                      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 50),
+                      margin: EdgeInsets.symmetric(horizontal: 20,),
                       child: Row(
                         children: [
                           Column(
@@ -205,7 +207,8 @@ class _SeatSelectionPageState extends State<SeatSelectionPage> {
                           BookingButton("Buy Tickets", FoodOrder()),
                         ],
                       ),
-                    )
+                    ),
+                    SizedBox(height: MARGIN_SMALL_20,),
                   ],
                 ),
               ),
@@ -246,14 +249,29 @@ class ZoomWidget extends StatefulWidget {
 }
 
 class _ZoomWidgetState extends State<ZoomWidget> {
-  double _value = 0.0;
-  double _secondValue = 0.0;
+  double _currentValue = 1.0;
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(
-        top: 20,
-      ),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.add,color: Colors.white,),
+        Container(
+          width: WIDTH_SPACING,
+          child: Slider(
+              value: _currentValue,
+              min: 0,
+              max: 10,
+              onChanged: (double value) {
+                setState(() {
+                  _currentValue = value;
+                });
+                print(_currentValue.round().toString());
+              }),
+        ),
+        Icon(Icons.remove,color: Colors.white,)
+      ],
     );
   }
 }

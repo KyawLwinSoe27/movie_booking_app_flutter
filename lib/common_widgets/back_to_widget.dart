@@ -16,6 +16,7 @@ class BackToWidget extends StatelessWidget {
         child: const Icon(
           Icons.chevron_left,
           size: CHEVRON_LEFT_FONT_SIZE,
+          color: Colors.white,
         ));
   }
 }

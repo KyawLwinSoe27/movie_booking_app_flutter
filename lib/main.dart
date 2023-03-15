@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_booking_app/pages/checkout.dart';
+import 'package:movie_booking_app/pages/cinema_details.dart';
 import 'package:movie_booking_app/pages/food_order_page.dart';
 import 'package:movie_booking_app/pages/payment.dart';
 import 'package:movie_booking_app/pages/seat_selection.dart';
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      home:HomePage(),
+      home:LoginPage(),
     );
   }
 }

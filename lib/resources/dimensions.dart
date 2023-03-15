@@ -3,6 +3,7 @@ const LOGO_WIDTH = 124.0;
 const LOGO_HEIGHT = 150.0;
 
 //TEXT SIZE
+const FONT_SIZE_10 = 10.0;
 const FONT_SIZE_12 = 12.0;
 const FONT_SIZE_14 = 14.0;
 const CITIES_FONT_SIZE = 15.0;
@@ -32,3 +33,19 @@ const MARGIN_MEDIUM_3X = 60.0;
 const MARGIN_MEDIUM_4X = 70.0;
 const MARGIN_LARGE = 80.0;
 const MARGIN_LARGE_2X = 90.0;
+
+//Border Radius
+const BORDER_RADIUS_3 = 3.0;
+const BR4 = 4.0;
+const BORDER_RADIUS_5 = 5.0;
+const BORDER_RADIUS_2X = 8.0;
+
+
+//Spacing
+const WIDTH_SPACING = 300.0;
+
+//Elevation
+const ELEVATION = 0.0;
+
+//BOX
+const CINEMA_SERVICE_WIDTH_HEIGHT = 17.0;

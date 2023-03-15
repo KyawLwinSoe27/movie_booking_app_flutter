@@ -42,10 +42,20 @@ dependencies:
   video_player: ^2.5.1
   intl: ^0.18.0
   qr_flutter: ^4.0.0
+  json_serializable: ^6.6.1
+  json_annotation: ^4.8.0
+  http: ^0.13.5
+  dio: ^4.0.4
+  retrofit: ^3.3.1
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  build_runner:
+  retrofit_generator: 4.2.0
+  hive_generator: ^2.0.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -74,16 +84,16 @@ flutter:
       - images/buildings.png
       - images/Credit_Card.png
       - images/human_illustrate.png
-      - Ellipse.png
-      - TakenChair.png
-      - CoupleSeat.png
-      - SelectedChair.png
-      - food.png
-      - movie_png_receipt.png
-      - Ballon.png
-      - home_cinema.png
-      - AvailableChair.png
-      - profilebg.png
+      - images/Ellipse.png
+      - images/TakenChair.png
+      - images/CoupleSeat.png
+      - images/SelectedChair.png
+      - images/food.png
+      - images/movie_png_receipt.png
+      - images/Ballon.png
+      - images/home_cinema.png
+      - images/AvailableChair.png
+      - images/profilebg.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
