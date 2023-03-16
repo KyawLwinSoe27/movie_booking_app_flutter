@@ -1,4 +1,5 @@
 import 'package:movie_booking_app/data/vos/authentication_vo.dart';
+import 'package:movie_booking_app/data/vos/otp_vo.dart';
 import 'package:movie_booking_app/network/dataagents/movie_booking_data_agent.dart';
 import 'package:movie_booking_app/network/dataagents/retrofit_movie_booking_data_agent_impl.dart';
 
@@ -14,11 +15,10 @@ class MovieBookingModelImpl extends MovieBookingModel
 
   MovieBookingModelImpl._internal(); //ရေးစရာဘာမှမရှိ
 
-  final MovieBookingDataAgent _dataAgent = RetrofitMovieBookingDataAgentImpl(); //data agent ကို setup လုပ်ေပးရတယ်။
+  final MovieBookingDataAgent _dataAgent = RetrofitMovieBookingDataAgentImpl();
+
   @override
-  Future<AuthenticationVO?> postPhoneNumber(int phoneNumber) {
-    // TODO: implement postPhoneNumber
+  Future<OtpVO?> postPhoneNumber(int phoneNumber) {
     return _dataAgent.postPhoneNumber(phoneNumber);
   }
-
 }

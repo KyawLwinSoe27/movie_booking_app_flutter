@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:movie_booking_app/data/vos/authentication_vo.dart';
+import 'package:movie_booking_app/data/vos/otp_vo.dart';
 import 'package:retrofit/http.dart';
 
 import 'api_constant.dart';
@@ -12,7 +13,7 @@ abstract class TheAppApi
   factory TheAppApi(Dio dio) = _TheAppApi;
 
   @POST(GET_OTP)
-  Future<AuthenticationVO> postPhoneNumber(
+  Future<OtpVO?> postPhoneNumber(
     @Field() int phoneNumber
   );
 }

@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:movie_booking_app/data/vos/authentication_vo.dart';
+import 'package:movie_booking_app/data/vos/otp_vo.dart';
 import 'package:movie_booking_app/network/dataagents/movie_booking_data_agent.dart';
 import 'package:movie_booking_app/network/the_app_api.dart';
 
@@ -19,10 +20,10 @@ class RetrofitMovieBookingDataAgentImpl extends MovieBookingDataAgent
     mApi = TheAppApi(dio);
   }
   @override
-  Future<AuthenticationVO?> postPhoneNumber(int phoneNumber) {
-    return mApi.postPhoneNumber(phoneNumber).then((value) {
+  Future<OtpVO?> postPhoneNumber(int phoneNumber) {
+    return mApi
+        .postPhoneNumber(phoneNumber).then((value) {
       debugPrint(value.toString());
     });
   }
-
 }

@@ -21,13 +21,13 @@ class _TheAppApi implements TheAppApi {
   String? baseUrl;
 
   @override
-  Future<AuthenticationVO> postPhoneNumber(phoneNumber) async {
+  Future<OtpVO?> postPhoneNumber(phoneNumber) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = {'phoneNumber': phoneNumber};
-    final _result = await _dio
-        .fetch<Map<String, dynamic>>(_setStreamType<AuthenticationVO>(Options(
+    final _result =
+        await _dio.fetch<Map<String, dynamic>?>(_setStreamType<OtpVO>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
@@ -39,7 +39,7 @@ class _TheAppApi implements TheAppApi {
               data: _data,
             )
             .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = AuthenticationVO.fromJson(_result.data!);
+    final value = _result.data == null ? null : OtpVO.fromJson(_result.data!);
     return value;
   }
 

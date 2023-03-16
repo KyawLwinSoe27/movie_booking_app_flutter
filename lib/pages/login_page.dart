@@ -27,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void initState() {
-    movieBookingModel.postPhoneNumber(int.parse(phoneNumber));
+
     // TODO: implement initState
     super.initState();
   }
@@ -36,7 +36,6 @@ class _LoginPageState extends State<LoginPage> {
   String phoneNumber = "";
   @override
   Widget build(BuildContext context) {
-    // print(phoneNumber.replaceAll("+95", "0"));
     return Scaffold(
       backgroundColor: BACKGROUND_COLOR,
       body: ListView(children: [
@@ -70,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
                         InternationalPhoneNumberInput(
                           onInputChanged: (value) {
                             setState(() {
-                              phoneNumber = value.phoneNumber!;
+                              phoneNumber = value.phoneNumber ?? "";
                             });
                           },
                           autoValidateMode: AutovalidateMode.onUserInteraction,
@@ -206,16 +205,17 @@ class DividerWidget extends StatelessWidget {
 
 
 class VerifyYourPhoneNumber extends StatelessWidget {
-  final String phoneNumber;
+  String phoneNumber;
   VerifyYourPhoneNumber(this.phoneNumber, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
       onPressed: () {
-    if(phoneNumber.isNotEmpty && phoneNumber.startsWith("+95") && phoneNumber.length == 13){
-      router(context, GetOTPPage());
-    }
+        if(phoneNumber.isNotEmpty && phoneNumber.startsWith("+95") && phoneNumber.length == 13){
+          phoneNumber = phoneNumber.replaceAll("+95", "0");
+          // router(context, GetOTPPage());
+        }
       },
       color: PRIMARY_COLOR,
       shape: RoundedRectangleBorder(
