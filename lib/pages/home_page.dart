@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:movie_booking_app/data/models/movie_booking_model.dart';
+import 'package:movie_booking_app/data/models/movie_booking_model_impl.dart';
 import 'package:movie_booking_app/functions/reuse_functions.dart';
 import 'package:movie_booking_app/pages/cinema_details.dart';
 import 'package:movie_booking_app/pages/movie_details.dart';
+import 'package:movie_booking_app/pages/profile_page.dart';
 import 'package:movie_booking_app/resources/colors.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
@@ -9,6 +12,9 @@ import '../common_widgets/IMDb_widget.dart';
 import '../common_widgets/back_to_widget.dart';
 import '../common_widgets/movie_ticket.dart';
 import '../common_widgets/rating_level.dart';
+import '../data/vos/banner_vo.dart';
+import '../data/vos/movies_vo.dart';
+import '../network/api_constant.dart';
 import '../resources/dimensions.dart';
 import '../resources/strings.dart';
 import 'cancel_booking.dart';
@@ -27,26 +33,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<String> nowShowingMovies = [
-    "https://cdn.marvel.com/content/1x/blackwidow_lob_crd_06.jpg",
-    "https://dx35vtwkllhj9.cloudfront.net/lionsgateus/plane/images/regions/us/onesheet.jpg",
-    "https://m.media-amazon.com/images/M/MV5BNzU4NWEwNDItMzMzYy00ZDYyLWIxZjMtMDlkYWVjNjQwYzBjXkEyXkFqcGdeQXVyMDM2NDM2MQ@@._V1_FMjpg_UX1000_.jpg",
-    "https://lumiere-a.akamaihd.net/v1/images/image_b3c7d632.jpeg?region=0,0,743,1100&width=480",
-    "https://cdn.marvel.com/content/1x/blackwidow_lob_crd_06.jpg",
-    "https://dx35vtwkllhj9.cloudfront.net/lionsgateus/plane/images/regions/us/onesheet.jpg",
-    "https://m.media-amazon.com/images/M/MV5BNzU4NWEwNDItMzMzYy00ZDYyLWIxZjMtMDlkYWVjNjQwYzBjXkEyXkFqcGdeQXVyMDM2NDM2MQ@@._V1_FMjpg_UX1000_.jpg",
-    "https://lumiere-a.akamaihd.net/v1/images/image_b3c7d632.jpeg?region=0,0,743,1100&width=480",
-  ];
-  List<String> comingSoonMovies = [
-    "https://lumiere-a.akamaihd.net/v1/images/p_luca_21670_3c13c611.jpeg",
-    "https://amc-theatres-res.cloudinary.com/image/upload/f_auto,fl_lossy,h_465,q_auto,w_310/v1672403850/amc-cdn/production/2/movies/66200/66246/Poster/Primary_BoxCover_HD_800_1200.jpg",
-    "https://flxt.tmsimg.com/assets/p25765_p_v12_aj.jpg",
-    "https://akamaividz2.zee5.com/image/upload/w_504,h_756,c_scale,f_webp,q_auto:eco/resources/0-0-1z5266206/portrait/1920x7707e5ac864fad243edba4af6583b84b115.jpg",
-    "https://lumiere-a.akamaihd.net/v1/images/p_luca_21670_3c13c611.jpeg",
-    "https://amc-theatres-res.cloudinary.com/image/upload/f_auto,fl_lossy,h_465,q_auto,w_310/v1672403850/amc-cdn/production/2/movies/66200/66246/Poster/Primary_BoxCover_HD_800_1200.jpg",
-    "https://flxt.tmsimg.com/assets/p25765_p_v12_aj.jpg",
-    "https://akamaividz2.zee5.com/image/upload/w_504,h_756,c_scale,f_webp,q_auto:eco/resources/0-0-1z5266206/portrait/1920x7707e5ac864fad243edba4af6583b84b115.jpg",
-  ];
+
+  MovieBookingModel movieBookingModel = MovieBookingModelImpl();
+
   List<Cinema> cinemas = [
     Cinema("JCGV Junction City"),
     Cinema("JCGV City Mall"),
@@ -58,8 +47,44 @@ class _HomePageState extends State<HomePage> {
     Cinema("Shae Saung Cinema"),
     Cinema("Nawaday Cinema")
   ];
+
+
   bool checkNowAndComing = false;
   int _currentPage = 0;
+  //State Variable
+  List<BannerVO>? banner;
+  List<MoviesVO>? nowShowingMovies;
+  List<MoviesVO>? comingSoonMovies;
+
+  @override
+  void initState() {
+    movieBookingModel.getBanner().then((bannerList) {
+      setState(() {
+        banner = bannerList;
+      });
+    }).catchError((error) {
+      debugPrint(error.toString());
+    });
+
+    movieBookingModel.getMovies("current").then((movies) {
+      setState(() {
+        nowShowingMovies = movies;
+      });
+    }).catchError((error) {
+      debugPrint(error.toString());
+    });
+
+    movieBookingModel.getMovies("comingsoon").then((movies) {
+      setState(() {
+        comingSoonMovies = movies;
+      });
+    }).catchError((error) {
+      debugPrint(error.toString());
+    });
+
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,13 +121,13 @@ class _HomePageState extends State<HomePage> {
             )
           : null,
       body: _currentPage == 0
-          ? movies(context)
+          ? Movies(banner : banner, comingSoonMovies : comingSoonMovies, nowShowingMovies : nowShowingMovies)
           : _currentPage == 1
               ? CinemaLists(cinemas : cinemas)
               : _currentPage == 2
                   ? const TicketWidget()
                   : _currentPage == 3
-                      ? ProfileWidget()
+                      ? const ProfileWidget()
                       : null,
       bottomNavigationBar: BottomNavigationBar(
         unselectedItemColor: LOGIN_SCREEN_SUB_TXT_COLOR,
@@ -136,8 +161,25 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+}
+class Movies extends StatefulWidget {
+  final List<BannerVO>? banner;
+  final  List<MoviesVO>? comingSoonMovies;
+  final List<MoviesVO>? nowShowingMovies;
+  const Movies({Key? key,
+    required this.banner,
+    required this.comingSoonMovies,
+    required this.nowShowingMovies,
+  }) : super(key: key);
 
-  Container movies(BuildContext context) {
+  @override
+  State<Movies> createState() => _MoviesState();
+}
+
+class _MoviesState extends State<Movies> {
+  bool checkNowAndComing = false;
+  @override
+  Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: MARGIN_SMALL_20),
       child: CustomScrollView(
@@ -146,7 +188,7 @@ class _HomePageState extends State<HomePage> {
           SliverList(
             delegate: SliverChildListDelegate(
               [
-                const BannerCarouselView(),
+                widget.banner != null ? BannerCarouselView(banner : widget.banner ) :const Center(child: CircularProgressIndicator()),
                 Column(
                   children: [
                     Container(
@@ -211,117 +253,16 @@ class _HomePageState extends State<HomePage> {
             delegate: SliverChildBuilderDelegate((context, index) {
               return !checkNowAndComing
                   ? NowShowingMovieView(index,
-                      nowShowingMovies: nowShowingMovies,
-                      checkNowAndComing: checkNowAndComing)
+                  nowShowingMovies: widget.nowShowingMovies ?? [],
+                  checkNowAndComing: checkNowAndComing)
                   : ComingSoonMovieView(index,
-                      ComingSoonMovies: comingSoonMovies,
-                      checkNowAndComing: checkNowAndComing);
+                  comingSoonMovies: widget.comingSoonMovies ?? [],
+                  checkNowAndComing: checkNowAndComing);
             },
                 childCount: !checkNowAndComing
-                    ? nowShowingMovies.length
-                    : comingSoonMovies.length),
+                    ? widget.nowShowingMovies?.length ?? 0
+                    : widget.comingSoonMovies?.length ?? 0),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class ProfileWidget extends StatelessWidget {
-  ProfileWidget({
-    Key? key,
-  }) : super(key: key);
-
-  final profileTabs = [
-    ProfileTabList(Icons.history, "Purchae History"),
-    ProfileTabList(Icons.local_offer, "Offer"),
-    ProfileTabList(Icons.card_giftcard, "Gift Card"),
-    ProfileTabList(Icons.location_on_rounded, "Location"),
-    ProfileTabList(Icons.payment, "Payment"),
-    ProfileTabList(Icons.help, "Help and Support"),
-    ProfileTabList(Icons.logout, "Logout")
-  ];
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Stack(
-            children: [
-              SizedBox(
-                width: 414,
-                height: 300,
-                child: Image.asset("images/profilebg.png",fit: BoxFit.cover,),
-              ),
-              const Positioned(
-                top: 80,
-                left: 150,
-                child: Icon(
-                  Icons.account_circle,
-                  size: 100,
-                  color: PRIMARY_COLOR,
-                ),
-              ),
-              Positioned(
-                bottom: 40,
-                left: 90,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: HOME_PAGE_PROFILE_BUTTON_COLOR,
-                    borderRadius: BorderRadius.circular(MARGIN_SMALL_8),
-                    border: Border.all(color: PRIMARY_COLOR),
-                  ),
-                  child: const Padding(
-                    padding: EdgeInsets.symmetric(
-                      vertical: MARGIN_SMALL_2X,
-                      horizontal: MARGIN_MEDIUM_1X,
-                    ),
-                    child: Text(
-                      "Login or Signup Up",
-                      style: TextStyle(
-                          fontSize: TITLE_TEXT_FONT_SIZE,
-                          fontWeight: FontWeight.w600,
-                          color: PRIMARY_COLOR,
-                      ),
-                    ),
-                  ),
-                ),
-              )
-            ],
-          ),
-          Container(
-            height: 700,
-            margin: const EdgeInsets.symmetric(
-              horizontal: MARGIN_SMALL_20,
-            ),
-            child: ListView.separated(
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (BuildContext context, int index) {
-                return Container(
-                  margin: const EdgeInsets.symmetric(vertical: MARGIN_SMALL_2X,),
-                  child: Row(
-                    children: [
-                      Icon(profileTabs[index].icon,color: Colors.white,),
-                      const SizedBox(width: MARGIN_SMALL_2X,),
-                      Text(
-                        profileTabs[index].text,
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: TITLE_TEXT_FONT_SIZE),
-                      ),
-                      const Spacer(),
-                      const Icon(Icons.chevron_right,color: Colors.white,)
-                    ],
-                  ),
-                );
-              },
-              itemCount: profileTabs.length,
-              separatorBuilder: (BuildContext context, int index) {
-                return const Divider(color: CHOOSE_CINEMA_PAGE_SERVICE_COLOR);
-              },
-            ),
-          )
         ],
       ),
     );
@@ -627,32 +568,32 @@ class NowShowingMovieView extends StatelessWidget {
       required this.checkNowAndComing})
       : super(key: key);
 
-  final List<String> nowShowingMovies;
+  final List<MoviesVO>? nowShowingMovies;
   final int index;
   final bool checkNowAndComing;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return nowShowingMovies != null ? GestureDetector(
       onTap: () {
-        router(context, MovieDetails(checkNowAndComing));
+        router(context, MovieDetails(checkNowAndComing,movieId: nowShowingMovies?[index].id ?? 0,));
       },
       child: Stack(
         children: [
           Positioned.fill(
             child: Image.network(
-              nowShowingMovies[index],
+              "$IMAGE_BASE_URL${nowShowingMovies?[index].posterPath ?? ""}",
               fit: BoxFit.fitHeight,
             ),
           ),
           Positioned.fill(
               child: Container(
-            decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.center,
-                    end: Alignment.bottomCenter,
-                    colors: [Colors.transparent, BACKGROUND_COLOR])),
-          )),
+                decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: Alignment.center,
+                        end: Alignment.bottomCenter,
+                        colors: [Colors.transparent, BACKGROUND_COLOR])),
+              )),
           Container(
             margin: const EdgeInsets.only(bottom: 20, left: 7, right: 7),
             alignment: Alignment.bottomCenter,
@@ -661,14 +602,16 @@ class NowShowingMovieView extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Text(
-                      "Venom II",
-                      style: TextStyle(
-                          fontSize: FONT_SIZE_12,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white),
+                    Expanded(
+                      child: Text(
+                        nowShowingMovies?[index].originalTitle ?? "",
+                        style: const TextStyle(
+                            fontSize: FONT_SIZE_12,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white),
+                      ),
                     ),
-                    const Spacer(),
+                    const SizedBox(width: MARGIN_SMALL_2X,),
                     Row(
                       children: [
                         Container(
@@ -679,13 +622,13 @@ class NowShowingMovieView extends StatelessWidget {
                               borderRadius: BorderRadius.circular(BORDER_RADIUS_3)),
                           child: const Center(
                               child: Text(
-                            "IMDb",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: FONT_SIZE_12,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black),
-                          )),
+                                "IMDb",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontSize: FONT_SIZE_12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black),
+                              )),
                         ),
                         const SizedBox(
                           width: 1.0,
@@ -740,7 +683,7 @@ class NowShowingMovieView extends StatelessWidget {
           )
         ],
       ),
-    );
+    ) :const Center(child: CircularProgressIndicator());
   }
 }
 
@@ -748,26 +691,26 @@ class ComingSoonMovieView extends StatelessWidget {
   const ComingSoonMovieView(
     this.index, {
     Key? key,
-    required this.ComingSoonMovies,
+    required this.comingSoonMovies,
     required this.checkNowAndComing,
   }) : super(key: key);
 
-  final List<String> ComingSoonMovies;
+  final List<MoviesVO>? comingSoonMovies;
   final int index;
   final bool checkNowAndComing;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return comingSoonMovies != null ? GestureDetector(
       onTap: () {
         print(checkNowAndComing);
-        router(context, MovieDetails(checkNowAndComing));
+        router(context, MovieDetails(checkNowAndComing, movieId: comingSoonMovies?[index].id ?? 0,));
       },
       child: Stack(
         children: [
           Positioned.fill(
             child: Image.network(
-              ComingSoonMovies[index],
+              "$IMAGE_BASE_URL${comingSoonMovies?[index].posterPath ?? ""}",
               fit: BoxFit.fitHeight,
             ),
           ),
@@ -804,14 +747,16 @@ class ComingSoonMovieView extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Text(
-                      "Venom II",
-                      style: TextStyle(
-                          fontSize: FONT_SIZE_12,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white),
+                    Expanded(
+                      child: Text(
+                        comingSoonMovies?[index].originalTitle ?? "",
+                        style: const TextStyle(
+                            fontSize: FONT_SIZE_12,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white),
+                      ),
                     ),
-                    const Spacer(),
+                    const SizedBox(width: MARGIN_SMALL_2X,),
                     Row(
                       children: const [
                         IMDbWidgetView(),
@@ -862,13 +807,14 @@ class ComingSoonMovieView extends StatelessWidget {
           )
         ],
       ),
-    );
+    ) : const Center(child: CircularProgressIndicator());
   }
 }
 
 class BannerCarouselView extends StatefulWidget {
+  final List<BannerVO>? banner;
   const BannerCarouselView({
-    Key? key,
+    Key? key, required this.banner,
   }) : super(key: key);
 
   @override
@@ -878,14 +824,6 @@ class BannerCarouselView extends StatefulWidget {
 class _BannerCarouselViewState extends State<BannerCarouselView> {
   double position = 0;
   final CarouselController _controller = CarouselController();
-  final List<String> imgList = [
-    'https://www.poultryworld.net/app/uploads/2021/04/001_310_IMG_KFCed.jpg',
-    'https://images.unsplash.com/photo-1522205408450-add114ad53fe?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=368f45b0888aeb0b7b08e3a1084d3ede&auto=format&fit=crop&w=1950&q=80',
-    'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=94a1e718d89ca60a6337a6008341ca50&auto=format&fit=crop&w=1950&q=80',
-    'https://images.unsplash.com/photo-1523205771623-e0faa4d2813d?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=89719a0d55dd05e2deae4120227e6efc&auto=format&fit=crop&w=1953&q=80',
-    'https://images.unsplash.com/photo-1508704019882-f9cf40e475b4?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=8c6e5e3aba713b17aa1fe71ab4f0ae5b&auto=format&fit=crop&w=1352&q=80',
-    'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80'
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -893,7 +831,7 @@ class _BannerCarouselViewState extends State<BannerCarouselView> {
       children: [
         SizedBox(
           width: 370,
-          height: 170,
+          height: 150,
           child: CarouselSlider(
             options: CarouselOptions(
               onPageChanged: (page, carouselReason) {
@@ -902,17 +840,17 @@ class _BannerCarouselViewState extends State<BannerCarouselView> {
                 });
               },
               autoPlay: true,
-              aspectRatio: 2.0,
+              // aspectRatio: 2.0,
               enlargeCenterPage: true,
             ),
-            items: imgList
-                .map((item) => ClipRRect(
+            items: widget.banner
+                ?.map((item) => ClipRRect(
                     borderRadius:
                         const BorderRadius.all(Radius.circular(BORDER_RADIUS_5)),
                     child: Stack(
                       children: <Widget>[
-                        Image.network(item,
-                            fit: BoxFit.cover, width: 1000.0),
+                        Image.network(item.url ?? "",
+                            fit: BoxFit.fill),
                         Positioned(
                           child: Container(
                             decoration: const BoxDecoration(
@@ -1033,7 +971,7 @@ class _BannerCarouselViewState extends State<BannerCarouselView> {
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: imgList.asMap().entries.map((entry) {
+          children: widget.banner?.asMap().entries.map((entry) {
             return GestureDetector(
               onTap: () => _controller.animateToPage(entry.key),
               child: Container(
@@ -1055,7 +993,7 @@ class _BannerCarouselViewState extends State<BannerCarouselView> {
                         : HOME_PAGE_INACTIVE_DOTS_COLOR,
                   )),
             );
-          }).toList(),
+          }).toList() ?? [],
         ),
       ],
     );

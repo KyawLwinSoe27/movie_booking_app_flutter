@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_booking_app/common_widgets/back_to_widget.dart';
+import 'package:movie_booking_app/data/vos/movies_vo.dart';
 import 'package:movie_booking_app/resources/colors.dart';
 
 import '../resources/dimensions.dart';
@@ -7,8 +8,8 @@ import 'home_page.dart';
 
 class MovieSearch extends StatefulWidget {
   final checkNowAndComing;
-  final List<String> nowShowingMovies;
-  final List<String> comingSoonMovies;
+  final List<MoviesVO>? nowShowingMovies;
+  final  List<MoviesVO>? comingSoonMovies;
   const MovieSearch(
       {Key? key,
       required this.checkNowAndComing,
@@ -255,10 +256,10 @@ class _MovieSearchState extends State<MovieSearch> {
                       delegate: SliverChildBuilderDelegate((context, index) {
                         return !widget.checkNowAndComing
                             ? NowShowingMovieView(0,
-                            nowShowingMovies: widget.nowShowingMovies,
+                            nowShowingMovies: widget.nowShowingMovies ?? [],
                             checkNowAndComing: widget.checkNowAndComing)
                             : ComingSoonMovieView(0,
-                            ComingSoonMovies: widget.comingSoonMovies,
+                            comingSoonMovies: widget.comingSoonMovies ?? [],
                             checkNowAndComing: widget.checkNowAndComing);
                       },
                           childCount: 1),

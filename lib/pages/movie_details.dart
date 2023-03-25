@@ -1,6 +1,12 @@
 import 'package:flick_video_player/flick_video_player.dart';
+import 'package:flutter/foundation.dart';
 import 'package:movie_booking_app/common_widgets/rating_level.dart';
+import 'package:movie_booking_app/data/models/movie_booking_model.dart';
+import 'package:movie_booking_app/data/models/movie_booking_model_impl.dart';
+import 'package:movie_booking_app/data/vos/cast_vo.dart';
+import 'package:movie_booking_app/data/vos/movies_vo.dart';
 import 'package:movie_booking_app/functions/reuse_functions.dart';
+import 'package:movie_booking_app/network/api_constant.dart';
 import 'package:movie_booking_app/pages/home_page.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
@@ -14,16 +20,43 @@ import 'choose_time_and_cinema.dart';
 
 class MovieDetails extends StatefulWidget {
   final checkNowAndComing;
-  const MovieDetails(this.checkNowAndComing, {Key? key}) : super(key: key);
+  final movieId;
+  const MovieDetails(this.checkNowAndComing, {Key? key, required this.movieId}) : super(key: key);
 
   @override
   State<MovieDetails> createState() => _MovieDetailsState();
 }
 
 class _MovieDetailsState extends State<MovieDetails> {
+
+  MovieBookingModel movieBookingModel = MovieBookingModelImpl();
+
+
   late FlickManager flickManager;
+  MoviesVO? movieDetails;
+  List<CastVO>? casts;
+  String? token;
+
+
   @override
   void initState() {
+    movieBookingModel.getUserDataFromDatabase().then((user) {
+      setState(() {
+        token = user?.token ?? "";
+      });
+    }).catchError((error) {
+      debugPrint(error.toString());
+    });
+
+    movieBookingModel.getMovieDetails(widget.movieId).then((movieDetails) {
+      setState(() {
+        this.movieDetails = movieDetails;
+        this.casts = movieDetails?.casts;
+      });
+    }).catchError((error) {
+      debugPrint(error.toString());
+    });
+
     super.initState();
     flickManager = FlickManager(
       videoPlayerController: VideoPlayerController.network(
@@ -40,68 +73,71 @@ class _MovieDetailsState extends State<MovieDetails> {
 
   @override
   Widget build(BuildContext context) {
-    List<String> moviesChip = [
-      "Action",
-      "Adventure",
-      "Comedy",
-      "Animation",
-    ];
+    print(" Movie Details ======> $token");
+    List<String> moviesChip = movieDetails?.genres ?? [];
     List<String> movieViewTypes = ["2D", "3D", "3D IMAGE"];
-    return Scaffold(
-      backgroundColor: BACKGROUND_COLOR,
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            child: Column(
-              children: [
-                BannerSectionView(
-                    flickManager: flickManager,
-                    moviesChip: moviesChip,
-                    movieViewTypes: movieViewTypes),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 17, vertical: 30),
-                  child: Row(
-                    children: [
-                      CRDWidgetView("Censor Rating", "U"),
-                      Spacer(),
-                      CRDWidgetView("Realease date", "AUG 8th, 2022"),
-                      Spacer(),
-                      CRDWidgetView("Duration", "2hr 15min")
-                    ],
+    if(movieDetails != null){
+      return Scaffold(
+        backgroundColor: BACKGROUND_COLOR,
+        body: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  BannerSectionView(
+                      flickManager: flickManager,
+                      moviesChip: moviesChip,
+                      movieViewTypes: movieViewTypes,
+                      movie: movieDetails
                   ),
-                ), //Extract Widget
-                Visibility(
-                  visible: widget.checkNowAndComing,
-                  child: NotiReleaseWidgetView(),
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 17),
-                  child: StoryLineWidgetView(),
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 17, vertical: 20),
-                  child: CastWidgetView(
-                      checkNowAndComing: widget.checkNowAndComing),
-                ),
-              ],
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 17, vertical: 30),
+                    child: Row(
+                      children: [
+                        CRDWidgetView("Censor Rating", "U"),
+                        Spacer(),
+                        CRDWidgetView("Realease date", movieDetails?.releaseDate ?? ""),
+                        Spacer(),
+                        CRDWidgetView("Duration", "2hr 15min")
+                      ],
+                    ),
+                  ), //Extract Widget
+                  Visibility(
+                    visible: widget.checkNowAndComing,
+                    child: NotiReleaseWidgetView(),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 17),
+                    child: StoryLineWidgetView(storyLine : movieDetails?.overview),
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 17, vertical: 20),
+                    child: CastWidgetView(
+                        checkNowAndComing: widget.checkNowAndComing, casts : casts),
+                  ),
+                ],
+              ),
             ),
-          ),
-          Visibility(
-            visible: !widget.checkNowAndComing,
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                margin: EdgeInsets.only(bottom: MARGIN_SMALL_20),
-                child: BookingButton(
-                  "Booking",
-                  ChooseTimeAndCinema(),
+            Visibility(
+              visible: !widget.checkNowAndComing,
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  margin: EdgeInsets.only(bottom: MARGIN_SMALL_20),
+                  child: BookingButton(
+                    "Booking",
+                    ChooseTimeAndCinema(token: token ?? ""),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    }else {
+      return const Center(child: CircularProgressIndicator());
+    }
+
   }
 }
 
@@ -113,10 +149,10 @@ class NotiReleaseWidgetView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(left: 17, right: 17, bottom: 30),
+      margin: const EdgeInsets.only(left: 17, right: 17, bottom: 30),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10.0),
-          gradient: LinearGradient(
+          gradient: const LinearGradient(
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
               colors: [
@@ -202,8 +238,10 @@ class NotiReleaseWidgetView extends StatelessWidget {
 
 class CastWidgetView extends StatelessWidget {
   final bool checkNowAndComing;
-  const CastWidgetView({
+  List<CastVO>? casts;
+  CastWidgetView({
     required this.checkNowAndComing,
+    required this.casts,
     Key? key,
   }) : super(key: key);
 
@@ -212,18 +250,18 @@ class CastWidgetView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           "Cast",
           style: TextStyle(
               color: Colors.white, fontSize: 14, fontWeight: FontWeight.w700),
         ),
-        SizedBox(
+        const SizedBox(
           height: MARGIN_SMALL_20,
         ),
-        Container(
+        SizedBox(
           height: 300,
           child: Container(
-            margin: EdgeInsets.only(
+            margin:const EdgeInsets.only(
               bottom: 30,
             ),
             child: ListView.builder(
@@ -231,33 +269,36 @@ class CastWidgetView extends StatelessWidget {
               itemCount: 10,
               itemBuilder: (BuildContext context, int index) {
                 return Container(
-                  margin: EdgeInsets.only(right: 23, bottom: 50),
-                  child: Column(
-                    children: [
-                      Container(
-                          width: 60,
-                          height: 60,
-                          child: CircleAvatar(
-                            backgroundImage: NetworkImage(
-                              "https://assets.rebelmouse.io/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpbWFnZSI6Imh0dHBzOi8vYXNzZXRzLnJibC5tcy8xMDI0OTAwNi9vcmlnaW4uanBnIiwiZXhwaXJlc19hdCI6MTcyNjAxMTg0MX0.X3x_k6E8WUGnrIWC98bMPfq99A3Rlibs0ar7VC7r4f4/img.jpg?width=1200&height=600&coordinates=0%2C106%2C0%2C504",
-                            ),
-                          )),
-                      SizedBox(
-                        height: 9,
-                      ),
-                      Text(
-                        "Katty\nas Monica",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
+                    margin: EdgeInsets.only(right: 23, bottom: 50),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                            width: 60,
+                            height: 60,
+                            child: CircleAvatar(
+                              backgroundImage: NetworkImage(
+                                "$IMAGE_BASE_URL${casts?[index].profilePath}",
+                              ),
+                            )),
+                        const SizedBox(
+                          height: 9,
                         ),
-                        textAlign: TextAlign.center,
-                      )
-                    ],
-                  ),
-                );
-              },
+                        SizedBox(
+                          width: 50,
+                          child: Text(
+                            casts?[index].name ?? "",
+                            style:const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        )
+                      ],
+                    ),
+                  );
+                },
             ),
           ),
         ),
@@ -267,8 +308,10 @@ class CastWidgetView extends StatelessWidget {
 }
 
 class StoryLineWidgetView extends StatelessWidget {
+  final String? storyLine;
   const StoryLineWidgetView({
     Key? key,
+    required this.storyLine,
   }) : super(key: key);
 
   @override
@@ -276,17 +319,17 @@ class StoryLineWidgetView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           "Story Line",
           style: TextStyle(
               fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
         ),
-        SizedBox(
+        const SizedBox(
           height: MARGIN_SMALL_3X,
         ),
         Text(
-          "In the 1970s, young Gru tries to join a group of supervillains called the Vicious 6 after they oust their leader -- the legendary fighter Wild Knuckles. When the interview turns disastrous, Gru and his Minions go on the run with the Vicious 6 hot on their tails. Luckily, he finds an unlikely source for guidance -- Wild Knuckles himself -- and soon discovers that even bad guys need a little help from their friends.",
-          style: TextStyle(
+          storyLine ?? "",
+          style: const TextStyle(
               fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
         )
       ],
@@ -300,11 +343,13 @@ class BannerSectionView extends StatelessWidget {
     required this.flickManager,
     required this.moviesChip,
     required this.movieViewTypes,
+    required this.movie,
   }) : super(key: key);
 
   final FlickManager flickManager;
   final List<String> moviesChip;
   final List<String> movieViewTypes;
+  final MoviesVO? movie;
 
   @override
   Widget build(BuildContext context) {
@@ -353,7 +398,7 @@ class BannerSectionView extends StatelessWidget {
                     width: 150,
                     height: 200,
                     child: Image.network(
-                      "https://dx35vtwkllhj9.cloudfront.net/universalstudios/minions-the-rise-of-gru/images/regions/us/onesheet.jpg",
+                      "$IMAGE_BASE_URL${movie?.posterPath}",
                       fit: BoxFit.fitHeight,
                     ),
                   ),
@@ -369,12 +414,14 @@ class BannerSectionView extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              Text(
-                                "Minions",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700),
+                              Expanded(
+                                child: Text(
+                                  movie?.originalTitle ?? "",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700),
+                                ),
                               ),
                               SizedBox(
                                 width: 7,
@@ -383,7 +430,7 @@ class BannerSectionView extends StatelessWidget {
                               SizedBox(
                                 width: 2,
                               ),
-                              RatingWidgetView("9.0")
+                              RatingWidgetView(movie?.rating.toString() ?? "")
                             ],
                           ),
                           SizedBox(

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:movie_booking_app/data/vos/user_data_vo.dart';
 import 'package:movie_booking_app/pages/home_page.dart';
+import '../data/models/movie_booking_model.dart';
+import '../data/models/movie_booking_model_impl.dart';
+import '../data/vos/cities_vo.dart';
 import '../functions/reuse_functions.dart';
 import 'package:movie_booking_app/resources/colors.dart';
 
@@ -11,16 +15,27 @@ class LocationPage extends StatefulWidget {
 }
 
 class _LocationPageState extends State<LocationPage> {
-  List<String> cities = [
-    "Yangon",
-    "Mandalay",
-    "Naypyidaw",
-    "Bago",
-    "Mawlwmyine",
-  ];
+
+  MovieBookingModel movieBookingModel = MovieBookingModelImpl();
+
+  List<CitiesVO>? allCities;
+
+  @override
+  void initState() {
+   movieBookingModel.getCitiesFromDatabase().then((cities) {
+     setState(() {
+       allCities = cities;
+     });
+   }).catchError((error) {
+     debugPrint(error.toString());
+   });
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: BACKGROUND_COLOR,
       body: Container(
@@ -41,14 +56,14 @@ class _LocationPageState extends State<LocationPage> {
             ImageWidget(),
             CitiesTitleWidget(),
             Container(
-              height: 350,
+              height: 340,
               child: ListView.builder(
                 scrollDirection: Axis.vertical,
-                itemCount: cities.length,
+                itemCount: allCities?.length,
                 itemBuilder: (BuildContext context, int index) {
                   return GestureDetector(
                     onTap: () {
-                      if(cities[index] == "Yangon"){
+                      if(allCities?[index].name == "Yangon"){
                         router(context,HomePage());
                       }
                     },
@@ -64,7 +79,7 @@ class _LocationPageState extends State<LocationPage> {
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          "${cities[index]}",
+                          "${allCities?[index].name}",
                           style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
@@ -159,7 +174,7 @@ class SearchLocationAndButton extends StatelessWidget {
     TextEditingController controller = TextEditingController();
     return Container(
       margin: EdgeInsets.symmetric(
-        horizontal: MARGIN_SMALL_3X,
+        horizontal: MARGIN_SMALL_2X,
       ),
       width: double.infinity,
       child: Row(
@@ -192,7 +207,7 @@ class SearchLocationAndButton extends StatelessWidget {
             ),
           ),
           SizedBox(
-            width: MARGIN_SMALL_2X + MARGIN_SMALL_2X,
+            width: MARGIN_SMALL_2X,
           ),
           Container(
             width: 50,

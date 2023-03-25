@@ -1,19 +1,22 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:movie_booking_app/common_widgets/logo_widgets.dart';
 import 'package:movie_booking_app/data/models/movie_booking_model.dart';
 import 'package:movie_booking_app/data/models/movie_booking_model_impl.dart';
-import 'package:movie_booking_app/data/vos/authentication_vo.dart';
+import 'package:movie_booking_app/data/vos/user_data_vo.dart';
 import 'package:movie_booking_app/functions/reuse_functions.dart';
+import 'package:movie_booking_app/network/the_app_api.dart';
 import 'package:movie_booking_app/pages/get_otp_page.dart';
 import '../common_widgets/terms_and_policy_widget.dart';
+import '../data/vos/otp_vo.dart';
+import '../network/dataagents/retrofit_movie_booking_data_agent_impl.dart';
 import '../resources/colors.dart';
 import '../resources/dimensions.dart';
 import '../resources/strings.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
-
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -22,18 +25,33 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   MovieBookingModel movieBookingModel = MovieBookingModelImpl();
 
-  //State Variable
-  // AuthenticationVO? inputPhoneNumber;
+  var phoneNumberController = TextEditingController();
+
+  // State Variable
+  int? statusCode;
 
   @override
   void initState() {
 
-    // TODO: implement initState
     super.initState();
   }
 
+  Future<OtpVO?> getResponse() async {
+    await movieBookingModel
+        .postPhoneNumber(phoneNumberController.text)
+        .then((response) {
+          statusCode = response?.statusCode;
+          if(statusCode == 200){
+            router(context, GetOTPPage(phoneNumber : phoneNumberController.text));
+          }
+    })
+        .catchError((error) {
+          print("Enter a valid phone number >>>> $error");
+        }
+    );
+  }
 
-  String phoneNumber = "";
+  // String phoneNumber = "";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +59,10 @@ class _LoginPageState extends State<LoginPage> {
       body: ListView(children: [
         Center(
           child: Container(
-            margin: const EdgeInsets.only(left: MARGIN_SMALL_4X, right: MARGIN_SMALL_4X, top: MARGIN_MEDIUM_2X),
+            margin: const EdgeInsets.only(
+                left: MARGIN_SMALL_4X,
+                right: MARGIN_SMALL_4X,
+                top: MARGIN_MEDIUM_2X),
             child: Column(
               children: [
                 const LogoWidget(),
@@ -68,16 +89,19 @@ class _LoginPageState extends State<LoginPage> {
                       children: [
                         InternationalPhoneNumberInput(
                           onInputChanged: (value) {
-                            setState(() {
-                              phoneNumber = value.phoneNumber ?? "";
-                            });
+                            // setState(() {
+                            //   phoneNumber = value.phoneNumber ?? "";
+                            //   phoneNumber = phoneNumber.replaceAll("+", "");
+                            //   print(phoneNumber);
+                            // });
                           },
+                          textFieldController: phoneNumberController,
                           autoValidateMode: AutovalidateMode.onUserInteraction,
                           countrySelectorScrollControlled: true,
                           validator: (value) {
-                            if(value!.isEmpty){
+                            if (value!.isEmpty) {
                               return "Please Enter a phone Number";
-                            }else if(value.length != 12) {
+                            } else if (value.length != 12) {
                               return "Enter a valid phone number";
                             }
                           },
@@ -85,7 +109,8 @@ class _LoginPageState extends State<LoginPage> {
                             selectorType: PhoneInputSelectorType.DIALOG,
                             showFlags: false,
                           ),
-                          selectorTextStyle: const TextStyle(color: Colors.white),
+                          selectorTextStyle:
+                              const TextStyle(color: Colors.white),
                           inputDecoration: const InputDecoration(
                             enabledBorder: UnderlineInputBorder(
                               borderSide: BorderSide(
@@ -110,7 +135,9 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(
                   height: MARGIN_SMALL_4X,
                 ),
-                VerifyYourPhoneNumber(phoneNumber),
+                VerifyYourPhoneNumber(() async {
+                  await getResponse();
+                }),
                 const SizedBox(
                   height: 20,
                 ),
@@ -131,7 +158,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-
 
 class ContinueWithGoogleButton extends StatelessWidget {
   const ContinueWithGoogleButton({
@@ -203,32 +229,26 @@ class DividerWidget extends StatelessWidget {
   }
 }
 
-
 class VerifyYourPhoneNumber extends StatelessWidget {
-  String phoneNumber;
-  VerifyYourPhoneNumber(this.phoneNumber, {super.key});
+  VerifyYourPhoneNumber(this.onPressed, {super.key});
 
+  final Function() onPressed;
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
-      onPressed: () {
-        if(phoneNumber.isNotEmpty && phoneNumber.startsWith("+95") && phoneNumber.length == 13){
-          phoneNumber = phoneNumber.replaceAll("+95", "0");
-          // router(context, GetOTPPage());
-        }
-      },
+      onPressed: onPressed,
       color: PRIMARY_COLOR,
       shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(8),
       ),
       padding: EdgeInsets.symmetric(
-    vertical: 15,
-    horizontal: 60,
+        vertical: 15,
+        horizontal: 60,
       ),
       minWidth: double.infinity,
       child: Text(
-    VERIFY_YOUR_PHONE_NUMBER_BUTTON,
-    style: TextStyle(color: Colors.black),
+        VERIFY_YOUR_PHONE_NUMBER_BUTTON,
+        style: TextStyle(color: Colors.black),
       ),
     );
   }

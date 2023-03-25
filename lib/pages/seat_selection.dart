@@ -1,20 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:movie_booking_app/data/models/movie_booking_model.dart';
+import 'package:movie_booking_app/data/models/movie_booking_model_impl.dart';
 import 'package:movie_booking_app/pages/choose_time_and_cinema.dart';
 import 'package:movie_booking_app/resources/colors.dart';
 
 import '../common_widgets/back_to_widget.dart';
 import '../common_widgets/booking_button.dart';
+import '../data/vos/seat_vo.dart';
 import '../resources/dimensions.dart';
 import 'food_order_page.dart';
 
 class SeatSelectionPage extends StatefulWidget {
-  const SeatSelectionPage({Key? key}) : super(key: key);
+  const SeatSelectionPage(
+      {Key? key,
+      required this.date,
+      required this.timeslotId,
+      required this.token})
+      : super(key: key);
+
+  final String date;
+  final int timeslotId;
+  final String token;
 
   @override
   State<SeatSelectionPage> createState() => _SeatSelectionPageState();
 }
 
 class _SeatSelectionPageState extends State<SeatSelectionPage> {
+  MovieBookingModel _movieBookigModel = MovieBookingModelImpl();
+
   final cinema = AllSeats([
     Line("A", "normal", [
       SingleSeat("A", "1", 4500),
@@ -98,6 +112,9 @@ class _SeatSelectionPageState extends State<SeatSelectionPage> {
 
   List<Seat> userTaken = [];
 
+  List<List<SeatVO>?>? seat;
+  List<SeatVO>? seatRow;
+
   double getTotalAmount() {
     double price = 0;
     userTaken.forEach((element) {
@@ -116,107 +133,162 @@ class _SeatSelectionPageState extends State<SeatSelectionPage> {
   }
 
   @override
+  void initState() {
+    _movieBookigModel
+        .getCinemaSeatingPlan("Bearer ${widget.token}", widget.timeslotId, widget.date)
+        .then((value) {
+      setState(() {
+        this.seat = value;
+        this.seatRow = value?.first;
+      });
+    });
+
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    print(widget.date);
+    print(widget.token);
+    print(widget.timeslotId);
+    print(seat?.length);
+    // print(seat?[1]?[1].symbol);
+    // print(seatRow?[0].symbol);
     return Scaffold(
-      backgroundColor: BACKGROUND_COLOR,
-      appBar: AppBar(
         backgroundColor: BACKGROUND_COLOR,
-        leading: BackToWidget(),
-      ),
-      body: Container(
-        height: 1000,
-        child: Stack(
-          children: [
-            SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Column(
-                children: [
-                  TVScreenWidget(),
-                  Container(
-                    height: 800,
-                    child: Column(
-                      children: [
-                        SeatTypeAndPrice("Normal(4500Ks)"),
-                        SizedBox(height: 20,),
-                        ...cinema.seatLines
-                            .where((seatType) => seatType.seatTypes == "normal")
-                            .map((line) => LineWidget(
-                          line: line,
-                          onTaken: _chosen,
-                          spaceAfter: const [4],
-                        )),
-                        SizedBox(height: 20,),
-                        SeatTypeAndPrice("Executive(6500Ks)"),
-                        SizedBox(height: 20,),
-                        ...cinema.seatLines
-                            .where((seatType) => seatType.seatTypes == "executive")
-                            .map((line) => LineWidget(line: line, onTaken: _chosen,spaceAfter: const [4],),),
-                        SizedBox(height: 20,),
-                        SeatTypeAndPrice("Premium(8500Ks)"),
-                        SizedBox(height: 20,),
-                        ...cinema.seatLines.where((seatType) => seatType.seatTypes == "premium").map((line) => LineWidget(line: line, onTaken: _chosen,spaceAfter: [4],),),
-                        SizedBox(height: 20,),
-                        SeatTypeAndPrice("Gold(10000Ks)"),
-                        SizedBox(height: 20,),
-                        ...cinema.seatLines.where((seatType) => seatType.seatTypes == "gold").map((line) => LineWidget(line: line, onTaken: _chosen,spaceAfter: [1,7],),),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                color: BACKGROUND_COLOR,
+        appBar: AppBar(
+          backgroundColor: BACKGROUND_COLOR,
+          leading: BackToWidget(),
+        ),
+        body: Container(
+          height: 1000,
+          child: Stack(
+            children: [
+              SingleChildScrollView(
+                scrollDirection: Axis.vertical,
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    SeatConditionWidget(),
-                    SizedBox(height: MARGIN_SMALL_20,),
-                    ZoomWidget(),
-                    SizedBox(height: MARGIN_SMALL_20,),
+                    TVScreenWidget(),
                     Container(
-                      margin: EdgeInsets.symmetric(horizontal: 20,),
-                      child: Row(
+                      child: Column(
                         children: [
-                          Column(
-                            children: [
-                              Text(
-                                '${userTaken.length} Ticket${userTaken.length > 1 ? "s" : ""} ',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 3,
-                              ),
-                              Text(
-                                "${getTotalAmount()}K${getTotalAmount() > 1 ? 's' : ''}",
-                                style: TextStyle(
-                                  color: PRIMARY_COLOR,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              )
-                            ],
+                          const SeatTypeAndPrice("Normal(4500Ks)"),
+                          const SizedBox(
+                            height: 20,
                           ),
-                          Spacer(),
-                          BookingButton("Buy Tickets", FoodOrder()),
+                          SizedBox(
+                            height: 800,
+                            child: ListView.builder(
+                              itemCount: seat?.length ?? 0,
+                                itemBuilder: (context, listViewIndex) {
+                                  return SizedBox(
+                                    height: 30,
+                                    child: GridView.builder(
+                                      itemCount: 18,
+                                      shrinkWrap: true,
+                                      gridDelegate:
+                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 18,
+                                          mainAxisSpacing: 10,
+                                          crossAxisSpacing: 3),
+                                      itemBuilder: (BuildContext context, int index) {
+                                        if (seat?[listViewIndex]?[index].type == "text") {
+                                          return Center(
+                                            child: Text(
+                                              seat?[listViewIndex]?[index].symbol ?? "",
+                                              style: const TextStyle(color: Colors.white),
+                                            ),
+                                          );
+                                        } else if (seat?[listViewIndex]?[index].type == "space") {
+                                          return Container();
+                                        } else if (seat?[listViewIndex]?[index].type == "taken") {
+                                          return Container(
+                                            child: Image.asset(
+                                              "images/AvailableChair.png",
+                                              color: Colors.grey,
+                                            ),
+                                          );
+                                        } else if (seat?[listViewIndex]?[index].type == "available") {
+                                          return Container(
+                                            child: Image.asset(
+                                              "images/AvailableChair.png",
+                                              color: Colors.white,
+                                            ),
+                                          );
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  );
+                                },
+                            ),
+                          )
                         ],
                       ),
                     ),
-                    SizedBox(height: MARGIN_SMALL_20,),
                   ],
                 ),
               ),
-            ),
-          ],
-        ),
-      )
-    );
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  color: BACKGROUND_COLOR,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SeatConditionWidget(),
+                      SizedBox(
+                        height: MARGIN_SMALL_20,
+                      ),
+                      ZoomWidget(),
+                      SizedBox(
+                        height: MARGIN_SMALL_20,
+                      ),
+                      Container(
+                        margin: EdgeInsets.symmetric(
+                          horizontal: 20,
+                        ),
+                        child: Row(
+                          children: [
+                            Column(
+                              children: [
+                                Text(
+                                  '${userTaken.length} Ticket${userTaken.length > 1 ? "s" : ""} ',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 3,
+                                ),
+                                Text(
+                                  "${getTotalAmount()}K${getTotalAmount() > 1 ? 's' : ''}",
+                                  style: TextStyle(
+                                    color: PRIMARY_COLOR,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                )
+                              ],
+                            ),
+                            Spacer(),
+                            BookingButton("Buy Tickets", FoodOrder()),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: MARGIN_SMALL_20,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ));
   }
 }
 
@@ -256,7 +328,10 @@ class _ZoomWidgetState extends State<ZoomWidget> {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(Icons.add,color: Colors.white,),
+        Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
         Container(
           width: WIDTH_SPACING,
           child: Slider(
@@ -270,7 +345,10 @@ class _ZoomWidgetState extends State<ZoomWidget> {
                 print(_currentValue.round().toString());
               }),
         ),
-        Icon(Icons.remove,color: Colors.white,)
+        Icon(
+          Icons.remove,
+          color: Colors.white,
+        )
       ],
     );
   }
@@ -441,7 +519,7 @@ class _SeatWidgetState extends State<SeatWidget> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          if(!widget.seat.occupied) {
+          if (!widget.seat.occupied) {
             widget.seat.chosen = !widget.seat.chosen;
             widget.onSelected!(widget.seat);
           }
@@ -453,16 +531,16 @@ class _SeatWidgetState extends State<SeatWidget> {
           height: 30,
           width: 30,
           child: (widget.seat is SingleSeat)
-              ? ( widget.seat.chosen
-              ? SingleMovieSeat(PRIMARY_COLOR)
-              : widget.seat.occupied
-              ? SingleMovieSeat(Colors.black12)
-              : SingleMovieSeat(Colors.white) )
-              :( widget.seat.chosen
-              ? CoupleMovieSeat(PRIMARY_COLOR)
-              : widget.seat.occupied
-              ? CoupleMovieSeat(Colors.black12)
-              : CoupleMovieSeat(Colors.white) ),
+              ? (widget.seat.chosen
+                  ? SingleMovieSeat(PRIMARY_COLOR)
+                  : widget.seat.occupied
+                      ? SingleMovieSeat(Colors.black12)
+                      : SingleMovieSeat(Colors.white))
+              : (widget.seat.chosen
+                  ? CoupleMovieSeat(PRIMARY_COLOR)
+                  : widget.seat.occupied
+                      ? CoupleMovieSeat(Colors.black12)
+                      : CoupleMovieSeat(Colors.white)),
         ),
       ),
     );
@@ -471,25 +549,33 @@ class _SeatWidgetState extends State<SeatWidget> {
 
 class CoupleMovieSeat extends StatelessWidget {
   final Color color;
-  const CoupleMovieSeat(this.color,{
+  const CoupleMovieSeat(
+    this.color, {
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Image.asset("images/CoupleSeat.png",color: color,);
+    return Image.asset(
+      "images/CoupleSeat.png",
+      color: color,
+    );
   }
 }
 
 class SingleMovieSeat extends StatelessWidget {
   final Color color;
-  const SingleMovieSeat(this.color,{
+  const SingleMovieSeat(
+    this.color, {
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Image.asset("images/AvailableChair.png",color: color,);
+    return Image.asset(
+      "images/AvailableChair.png",
+      color: color,
+    );
   }
 }
 

@@ -1,13 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:movie_booking_app/data/models/movie_booking_model.dart';
+import 'package:movie_booking_app/data/models/movie_booking_model_impl.dart';
 import 'package:movie_booking_app/functions/reuse_functions.dart';
+import 'package:movie_booking_app/pages/home_page.dart';
 import 'package:movie_booking_app/pages/login_page.dart';
 import 'package:movie_booking_app/resources/colors.dart';
 import 'package:movie_booking_app/resources/dimensions.dart';
 import 'package:movie_booking_app/resources/strings.dart';
 
 import '../common_widgets/logo_widgets.dart';
+import '../data/vos/cities_vo.dart';
 
 class LogoPage extends StatefulWidget {
   const LogoPage({super.key});
@@ -17,16 +21,41 @@ class LogoPage extends StatefulWidget {
 }
 
 class _LogoPageState extends State<LogoPage> {
+  MovieBookingModel movieBookingModel = MovieBookingModelImpl();
+
+  //State Variables
+  List<CitiesVO>? cities;
+
   @override
   void initState() {
+
+
+    movieBookingModel.getCities().then((citiesList) {
+      setState(() {
+        cities = citiesList;
+      });
+    }).catchError((error) {
+      debugPrint(error.toString());
+    });
+
     super.initState();
-    startTime();
+    _NavigateToAnotherScreen();
+  }
+
+  void _NavigateToAnotherScreen(){
+    movieBookingModel.getUserDataFromDatabase().then((user) async {
+      if(user != null){
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
+      }else {
+        await startTime();
+      }
+    });
   }
 
   startTime() async {
     var duration = const Duration(seconds: 5);
     return Timer(duration, () {
-      router(context, LoginPage());
+      router(context, const LoginPage());
     });
   }
 

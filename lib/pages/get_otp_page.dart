@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:movie_booking_app/common_widgets/logo_widgets.dart';
+import 'package:movie_booking_app/data/models/movie_booking_model.dart';
+import 'package:movie_booking_app/network/responses/user_account_response.dart';
 import 'package:movie_booking_app/pages/login_page.dart';
 import '../common_widgets/terms_and_policy_widget.dart';
+import '../data/models/movie_booking_model_impl.dart';
+import '../data/vos/user_data_vo.dart';
 import '../functions/reuse_functions.dart';
 import '../resources/colors.dart';
 import '../resources/dimensions.dart';
@@ -10,6 +14,9 @@ import '../resources/strings.dart';
 import 'location_page.dart';
 
 class GetOTPPage extends StatefulWidget {
+  final String phoneNumber;
+  const GetOTPPage({super.key, required this.phoneNumber});
+
   @override
   State<GetOTPPage> createState() => _GetOTPPageState();
 }
@@ -22,10 +29,26 @@ class _GetOTPPageState extends State<GetOTPPage> {
   final TextEditingController _fieldFive = TextEditingController();
   final TextEditingController _fieldSix = TextEditingController();
 
+  MovieBookingModel movieBookingModel = MovieBookingModelImpl();
+
   String? _otp;
+
+  Future<UserDataVO?> getRespond() async {
+      await movieBookingModel
+          .postOtp(widget.phoneNumber, _otp ?? "")
+          .then((value) {
+        print(widget.phoneNumber);
+        // print(value?.id);
+        if(value?.token != null){
+          router(context, LocationPage());
+        }
+      });
+      return null;
+  }
 
   @override
   Widget build(BuildContext context) {
+    print(widget.phoneNumber);
     return Scaffold(
       backgroundColor: BACKGROUND_COLOR,
       body: ListView(children: [
@@ -110,10 +133,10 @@ class _GetOTPPageState extends State<GetOTPPage> {
                     ],
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: MARGIN_MEDIUM_1X,
                 ),
-                Confirm_OTP_BUTTON_WIDGET(() {
+                ConfirmOTPBUTTONWIDGET(() {
                   setState(() {
                     _otp = _fieldOne.text +
                         _fieldTwo.text +
@@ -123,10 +146,10 @@ class _GetOTPPageState extends State<GetOTPPage> {
                         _fieldSix.text;
                   });
                   if (_otp?.length == 6) {
-                    router(context, LocationPage());
+                    getRespond();
                   } else {}
                 }),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 SizedBox(
@@ -186,9 +209,9 @@ class OTP_input_text_widget extends StatelessWidget {
   }
 }
 
-class Confirm_OTP_BUTTON_WIDGET extends StatelessWidget {
+class ConfirmOTPBUTTONWIDGET extends StatelessWidget {
   final Function checkValue;
-  Confirm_OTP_BUTTON_WIDGET(this.checkValue);
+  ConfirmOTPBUTTONWIDGET(this.checkValue, {super.key});
   @override
   Widget build(BuildContext context) {
     return Container(
