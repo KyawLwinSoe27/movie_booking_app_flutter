@@ -50,7 +50,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
   }
 
   Future<LogOutResponse?> logOut() async {
-    await movieBookingModel.postLogOut("Bearer ${token!}").then((response) {
+    await movieBookingModel.postLogOut("Bearer $token").then((response) {
       var statusCode = response?.code;
       if (statusCode == 200) {
         if (movieBookingModel.deleteUserDataFromDatabase()) {

@@ -29,91 +29,15 @@ class SeatSelectionPage extends StatefulWidget {
 class _SeatSelectionPageState extends State<SeatSelectionPage> {
   MovieBookingModel _movieBookigModel = MovieBookingModelImpl();
 
-  final cinema = AllSeats([
-    Line("A", "normal", [
-      SingleSeat("A", "1", 4500),
-      SingleSeat("A", "2", 4500),
-      SingleSeat("A", "3", 4500),
-      SingleSeat("A", "4", 4500),
-      SingleSeat("A", "5", 4500),
-      SingleSeat("A", "6", 4500),
-      SingleSeat("A", "7", 4500),
-      SingleSeat("A", "8", 4500),
-    ]),
-    Line("B", "normal", [
-      SingleSeat("B", "1", 4500),
-      SingleSeat("B", "2", 4500),
-      SingleSeat("B", "3", 4500),
-      SingleSeat("B", "4", 4500),
-      SingleSeat("B", "5", 4500),
-      SingleSeat("B", "6", 4500),
-      SingleSeat("B", "7", 4500),
-      SingleSeat("B", "8", 4500),
-    ]),
-    Line("C", "executive", [
-      SingleSeat("C", "1", 6500),
-      SingleSeat("C", "2", 6500),
-      SingleSeat("C", "3", 6500),
-      SingleSeat("C", "4", 6500),
-      SingleSeat("C", "5", 6500),
-      SingleSeat("C", "6", 6500),
-      SingleSeat("C", "7", 6500),
-      SingleSeat("C", "8", 6500),
-    ]),
-    Line("D", "executive", [
-      SingleSeat("A", "1", 6500),
-      SingleSeat("D", "2", 6500),
-      SingleSeat("D", "3", 6500),
-      SingleSeat("D", "4", 6500),
-      SingleSeat("D", "5", 6500),
-      SingleSeat("D", "6", 6500),
-      SingleSeat("D", "7", 6500),
-      SingleSeat("D", "8", 6500),
-    ]),
-    Line("E", "premium", [
-      SingleSeat("E", "1", 8500),
-      SingleSeat("E", "2", 8500),
-      SingleSeat("E", "3", 8500),
-      SingleSeat("E", "4", 8500),
-      SingleSeat("E", "5", 8500),
-      SingleSeat("E", "6", 8500),
-      SingleSeat("E", "7", 8500),
-      SingleSeat("E", "8", 8500),
-    ]),
-    Line("F", "premium", [
-      SingleSeat("F", "1", 8500),
-      SingleSeat("F", "2", 8500),
-      SingleSeat("F", "3", 8500),
-      SingleSeat("F", "4", 8500),
-      SingleSeat("F", "5", 8500),
-      SingleSeat("F", "6", 8500),
-      SingleSeat("F", "7", 8500),
-      SingleSeat("F", "8", 8500),
-    ]),
-    Line("G", "gold", [
-      CoupleSeat("G", "1", 10000),
-      SingleSeat("G", "2", 10000),
-      SingleSeat("G", "3", 10000),
-      SingleSeat("G", "4", 10000),
-      SingleSeat("G", "5", 10000),
-      SingleSeat("G", "6", 10000),
-      CoupleSeat("G", "7", 10000)
-    ]),
-    Line("H", "gold", [
-      CoupleSeat("H", "1", 10000),
-      SingleSeat("H", "2", 10000),
-      SingleSeat("H", "3", 10000),
-      SingleSeat("H", "4", 10000),
-      SingleSeat("H", "5", 10000),
-      SingleSeat("H", "6", 10000),
-      CoupleSeat("H", "7", 10000)
-    ]),
-  ]);
+
 
   List<Seat> userTaken = [];
 
   List<List<SeatVO>?>? seat;
   List<SeatVO>? seatRow;
+  int totalTickets = 0;
+  int totalAmounts = 0;
+  List<String> seatName = [];
 
   double getTotalAmount() {
     double price = 0;
@@ -149,11 +73,14 @@ class _SeatSelectionPageState extends State<SeatSelectionPage> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.date);
-    print(widget.token);
-    print(widget.timeslotId);
-    print(seat?.length);
-    // print(seat?[1]?[1].symbol);
+    print("build ======> $totalTickets");
+    print("build ======> $totalAmounts");
+    print("build ======> $seatName");
+    // print(widget.date);
+    // print(widget.token);
+    // print(widget.timeslotId);
+    // print(seat?.length);
+    // print(seat?[1]?[1].isSelected);
     // print(seatRow?[0].symbol);
     return Scaffold(
         backgroundColor: BACKGROUND_COLOR,
@@ -185,6 +112,7 @@ class _SeatSelectionPageState extends State<SeatSelectionPage> {
                                   return SizedBox(
                                     height: 30,
                                     child: GridView.builder(
+                                      physics: NeverScrollableScrollPhysics(),
                                       itemCount: 18,
                                       shrinkWrap: true,
                                       gridDelegate:
@@ -203,7 +131,7 @@ class _SeatSelectionPageState extends State<SeatSelectionPage> {
                                         } else if (seat?[listViewIndex]?[index].type == "space") {
                                           return Container();
                                         } else if (seat?[listViewIndex]?[index].type == "taken") {
-                                          return Container(
+                                          return SizedBox(
                                             child: Image.asset(
                                               "images/AvailableChair.png",
                                               color: Colors.grey,
@@ -211,13 +139,22 @@ class _SeatSelectionPageState extends State<SeatSelectionPage> {
                                           );
                                         } else if (seat?[listViewIndex]?[index].type == "available") {
                                           return Container(
-                                            child: Image.asset(
-                                              "images/AvailableChair.png",
-                                              color: Colors.white,
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  seat?[listViewIndex]?[index].isSelected == false ? seat?[listViewIndex]?[index].isSelected = true : seat?[listViewIndex]?[index].isSelected = false;
+                                                  seat?[listViewIndex]?[index].isSelected == true ? totalTickets++ : totalTickets--;
+                                                  seat?[listViewIndex]?[index].isSelected == true ? totalAmounts += seat?[listViewIndex]?[index].price ?? 0 : totalAmounts -= seat?[listViewIndex]?[index].price ?? 0;
+                                                  seat?[listViewIndex]?[index].isSelected == true ? seatName.add(seat?[listViewIndex]?[index].seatName ?? "") : seatName.remove(seat?[listViewIndex]?[index].seatName ?? "");
+                                                });
+                                              },
+                                              child: Image.asset(
+                                                "images/AvailableChair.png",
+                                                color: seat?[listViewIndex]?[index].isSelected == true ? PRIMARY_COLOR : Colors.white,
+                                              ),
                                             ),
                                           );
                                         }
-                                        return null;
                                       },
                                     ),
                                   );
@@ -254,7 +191,7 @@ class _SeatSelectionPageState extends State<SeatSelectionPage> {
                             Column(
                               children: [
                                 Text(
-                                  '${userTaken.length} Ticket${userTaken.length > 1 ? "s" : ""} ',
+                                  '$totalTickets Ticket${totalTickets > 1 ? "s" : ""} ',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 18,
@@ -265,7 +202,7 @@ class _SeatSelectionPageState extends State<SeatSelectionPage> {
                                   height: 3,
                                 ),
                                 Text(
-                                  "${getTotalAmount()}K${getTotalAmount() > 1 ? 's' : ''}",
+                                  "${totalAmounts}K${totalAmounts > 1 ? 's' : ''}",
                                   style: TextStyle(
                                     color: PRIMARY_COLOR,
                                     fontSize: 20,
@@ -446,57 +383,6 @@ class TVScreenWidget extends StatelessWidget {
               ),
             ),
           )
-        ],
-      ),
-    );
-  }
-}
-
-class LineWidget extends StatefulWidget {
-  const LineWidget({
-    super.key,
-    required this.line,
-    required this.onTaken,
-    this.spaceAfter,
-  });
-
-  final Line line;
-  final Function(Seat takenSeat) onTaken;
-  final List<int>? spaceAfter;
-
-  @override
-  State<LineWidget> createState() => _LineWidgetState();
-}
-
-class _LineWidgetState extends State<LineWidget> {
-  @override
-  Widget build(BuildContext context) {
-    List<Widget> formatSeat = [
-      ...widget.line.seats.map((e) => SeatWidget(
-            seat: e,
-            onSelected: widget.onTaken,
-          ))
-    ];
-
-    for (var index in widget.spaceAfter!) {
-      formatSeat.insert(index, const Expanded(child: SizedBox()));
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Row(
-        children: [
-          Text(
-            widget.line.lineName,
-            style: TextStyle(color: TICKET_BG_TOP_COLOR),
-          ),
-          const SizedBox(width: 5),
-          Expanded(child: Row(children: formatSeat)),
-          const SizedBox(width: 5),
-          Text(
-            widget.line.lineName,
-            style: TextStyle(color: TICKET_BG_TOP_COLOR),
-          ),
         ],
       ),
     );

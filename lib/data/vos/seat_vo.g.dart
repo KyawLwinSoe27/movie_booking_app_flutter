@@ -12,6 +12,7 @@ SeatVO _$SeatVOFromJson(Map<String, dynamic> json) => SeatVO(
       json['seat_name'] as String?,
       json['symbol'] as String?,
       json['price'] as int?,
+      json['isSelected'] as bool?,
     );
 
 Map<String, dynamic> _$SeatVOToJson(SeatVO instance) => <String, dynamic>{
@@ -20,4 +21,5 @@ Map<String, dynamic> _$SeatVOToJson(SeatVO instance) => <String, dynamic>{
       'seat_name': instance.seatName,
       'symbol': instance.symbol,
       'price': instance.price,
+      'isSelected': instance.isSelected,
     };

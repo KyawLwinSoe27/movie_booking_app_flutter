@@ -21,9 +21,8 @@ class UserDataDao
     return getUserDataBox().get('user');
   }
 
-  bool deleteUserData(){
-     getUserDataBox().delete('user');
-     return true;
+  Future<void> deleteUserData(){
+     return getUserDataBox().delete('user');
   }
 
   Box<UserDataVO> getUserDataBox(){

@@ -97,11 +97,17 @@ class MovieBookingModelImpl extends MovieBookingModel
   Future<List<List<SeatVO>?>?> getCinemaSeatingPlan(String token, int cinemaDayTimeslotsId, String bookingDate){
     return _dataAgent.getCinemaSeatingPlan(token, cinemaDayTimeslotsId.toString(),bookingDate).then((value) {
       for(int i = 0; i < value!.length; i++){
-        value[i]?.insert(5, SeatVO(0, "space", "", "", 0));
-        value[i]?.insert(6, SeatVO(0, "space", "", "", 0));
-        value[i]?.insert(11, SeatVO(0, "space", "", "", 0));
-        value[i]?.insert(12, SeatVO(0, "space", "", "", 0));
+        value[i]?.insert(5, SeatVO(0, "space", "", "", 0,false));
+        value[i]?.insert(6, SeatVO(0, "space", "", "", 0,false));
+        value[i]?.insert(11, SeatVO(0, "space", "", "", 0,false));
+        value[i]?.insert(12, SeatVO(0, "space", "", "", 0,false));
       }
+      value.map((e) {
+        e?.map((seat) {
+          seat.isSelected = false;
+          return seat;
+        }).toList();
+      }).toList();
       return value;
     });
   }
@@ -118,7 +124,7 @@ class MovieBookingModelImpl extends MovieBookingModel
   }
 
   @override
-  Future<UserDataVO> getUserDataFromDatabase(){
+  Future<UserDataVO?> getUserDataFromDatabase(){ //NUllable
     return Future.value(
       _mUserDataDao.getUserData()
     );

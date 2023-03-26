@@ -40,10 +40,12 @@ class _LogoPageState extends State<LogoPage> {
 
     super.initState();
     _NavigateToAnotherScreen();
+    //  startTime();
   }
 
   void _NavigateToAnotherScreen(){
     movieBookingModel.getUserDataFromDatabase().then((user) async {
+      print(user?.token);
       if(user != null){
         Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
       }else {

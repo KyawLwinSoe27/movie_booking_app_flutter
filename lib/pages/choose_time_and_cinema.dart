@@ -29,11 +29,12 @@ class _ChooseTimeAndCinemaState extends State<ChooseTimeAndCinema> {
 
   // Variable
   String? chooseDate;
+  String? token;
   String? bookingDate;
   List<CinemaVO>? cinemaAndShowtime;
 
-  Future<List<CinemaVO>?> getCinemaAndShowtime(date) async {
-    await _movieBookingModel.getCinemaAndShowtime("Bearer ${widget.token}",date).then((cinema) {
+  Future<List<CinemaVO>?> getCinemaAndShowtime(token,date) async {
+    await _movieBookingModel.getCinemaAndShowtime(token,date).then((cinema) {
       setState(() {
         this.cinemaAndShowtime = cinema;
       });
@@ -45,6 +46,21 @@ class _ChooseTimeAndCinemaState extends State<ChooseTimeAndCinema> {
   @override
 
   void initState() {
+    print("hello");
+    print("today date is $date");
+    print("token is ${widget.token}");
+    print("hello");
+    _movieBookingModel.getUserDataFromDatabase().then((user) {
+      setState(() {
+        token = user?.token ?? "";
+      });
+      if(token != null){
+        getCinemaAndShowtime("Bearer ${user?.token}",date.toString().substring(0, 10));
+      }
+    }).catchError((error) {
+      debugPrint(error.toString());
+    });
+
 
     for (int i = 1; i <= 14; i++) {
       setState(() {
@@ -56,7 +72,6 @@ class _ChooseTimeAndCinemaState extends State<ChooseTimeAndCinema> {
       chooseDate = dateList[0].toString().substring(0, 10);
     });
 
-    getCinemaAndShowtime(chooseDate);
     super.initState();
   }
 
@@ -112,7 +127,7 @@ class _ChooseTimeAndCinemaState extends State<ChooseTimeAndCinema> {
                 setState(() {
                   this.bookingDate = bookingDate;
                 });
-                getCinemaAndShowtime(bookingDate);
+                getCinemaAndShowtime("Bearer $token",bookingDate);
               },
             ),
             const MovieTypeWidgetView(),
@@ -245,6 +260,7 @@ class MovieShowTimeGridWidget extends StatelessWidget {
           final TimeslotsVO? timeslots = showTime?[index];
           return GestureDetector(
               onLongPress: () {
+                // print(date);
                 router(context, SeatSelectionPage(date : date, timeslotId : timeslots?.cinemaDayTimeslotId ?? 0, token : token));
               },
             child: Container(
