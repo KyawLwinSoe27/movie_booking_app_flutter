@@ -130,12 +130,12 @@ class TicketConfirmationWidget extends StatelessWidget {
             Container(
               child: Column(
                 children: [
-                  QrImage(
-                    data: "1234567890",
-                    version: QrVersions.auto,
-                    size: 120.0,
-                    foregroundColor: Colors.white,
-                  ),
+                  // QrImage(
+                  //   data: "1234567890",
+                  //   version: QrVersions.auto,
+                  //   size: 120.0,
+                  //   foregroundColor: Colors.white,
+                  // ),
                   SizedBox(
                     height: MARGIN_SMALL_20,
                   ),

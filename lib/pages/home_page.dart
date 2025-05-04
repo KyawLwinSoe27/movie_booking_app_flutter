@@ -6,7 +6,6 @@ import 'package:movie_booking_app/pages/cinema_details.dart';
 import 'package:movie_booking_app/pages/movie_details.dart';
 import 'package:movie_booking_app/pages/profile_page.dart';
 import 'package:movie_booking_app/resources/colors.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 
 import '../common_widgets/IMDb_widget.dart';
 import '../common_widgets/back_to_widget.dart';
@@ -823,7 +822,6 @@ class BannerCarouselView extends StatefulWidget {
 
 class _BannerCarouselViewState extends State<BannerCarouselView> {
   double position = 0;
-  final CarouselController _controller = CarouselController();
 
   @override
   Widget build(BuildContext context) {
@@ -832,169 +830,37 @@ class _BannerCarouselViewState extends State<BannerCarouselView> {
         SizedBox(
           width: 370,
           height: 150,
-          child: CarouselSlider(
-            options: CarouselOptions(
-              onPageChanged: (page, carouselReason) {
-                setState(() {
-                  position = page.toDouble();
-                });
-              },
-              autoPlay: true,
-              // aspectRatio: 2.0,
-              enlargeCenterPage: true,
-            ),
-            items: widget.banner
-                ?.map((item) => ClipRRect(
-                    borderRadius:
-                        const BorderRadius.all(Radius.circular(BORDER_RADIUS_5)),
-                    child: Stack(
-                      children: <Widget>[
-                        Image.network(item.url ?? "",
-                            fit: BoxFit.fill),
-                        Positioned(
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Color.fromRGBO(0, 0, 1, 1.0),
-                                  Colors.transparent,
-                                ],
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.topLeft,
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                top: MARGIN_SMALL_16,
-                                left: MARGIN_SMALL_20),
-                            child: Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                              children: [
-                                RichText(
-                                  text: const TextSpan(children: [
-                                    TextSpan(
-                                      text: "10%",
-                                      style: TextStyle(
-                                        fontSize:
-                                            HOME_PAGE_BANNER_DISCOUNT_PERCENT,
-                                        fontWeight: FontWeight.w700,
-                                        letterSpacing: 0.3,
-                                      ),
-                                    ),
-                                    WidgetSpan(
-                                      child: Padding(
-                                        padding: EdgeInsets.only(
-                                          right: MARGIN_SMALL_1X,
-                                        ),
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text: "off",
-                                      style: TextStyle(
-                                          fontSize:
-                                              TITLE_TEXT_FONT_SIZE,
-                                          fontWeight: FontWeight.w600,
-                                          letterSpacing: 0.3),
-                                    ),
-                                  ]),
-                                ),
-                                RichText(
-                                  text: const TextSpan(children: [
-                                    TextSpan(
-                                      text: "with",
-                                      style: TextStyle(
-                                        fontSize: FONT_SIZE_14,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                    WidgetSpan(
-                                      child: Padding(
-                                        padding: EdgeInsets.only(
-                                          right: MARGIN_SMALL_1X,
-                                        ),
-                                      ),
-                                    ),
-                                    TextSpan(
-                                        text: "KBZ",
-                                        style: TextStyle(
-                                          fontSize:
-                                              TITLE_TEXT_FONT_SIZE,
-                                          fontWeight: FontWeight.w700,
-                                        )),
-                                    WidgetSpan(
-                                      child: Padding(
-                                        padding: EdgeInsets.only(
-                                          right: MARGIN_SMALL_1X,
-                                        ),
-                                      ),
-                                    ),
-                                    TextSpan(
-                                        text: "debit card",
-                                        style: TextStyle(
-                                          fontSize: FONT_SIZE_14,
-                                          fontWeight: FontWeight.w700,
-                                        )),
-                                  ]),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Align(
-                          alignment: Alignment.bottomLeft,
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: MARGIN_SMALL_20,
-                                bottom: MARGIN_SMALL_16),
-                            child: SizedBox(
-                              width: 93,
-                              height: 62,
-                              child: Image.asset(
-                                "images/Credit_Card.png",
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
-                    )))
-                .toList(),
-          ),
+          child: BannerCarouselView(banner: widget.banner),
         ),
         const SizedBox(
           height: MARGIN_SMALL_2X,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: widget.banner?.asMap().entries.map((entry) {
-            return GestureDetector(
-              onTap: () => _controller.animateToPage(entry.key),
-              child: Container(
-                  width: MARGIN_SMALL_8,
-                  height: MARGIN_SMALL_8,
-                  margin: const EdgeInsets.symmetric(vertical: MARGIN_SMALL_8, horizontal: MARGIN_SMALL_1X),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      position == entry.key
-                          ? const BoxShadow(
-                              color: PRIMARY_COLOR,
-                              blurRadius: 5.0,
-                              spreadRadius: 2.0)
-                          : const BoxShadow(),
-                    ],
-                    color: position == entry.key
-                        ? PRIMARY_COLOR
-                        : HOME_PAGE_INACTIVE_DOTS_COLOR,
-                  )),
-            );
-          }).toList() ?? [],
-        ),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: widget.banner?.asMap().entries.map((entry) {
+        //     return GestureDetector(
+        //       onTap: () => _controller.animateToPage(entry.key),
+        //       child: Container(
+        //           width: MARGIN_SMALL_8,
+        //           height: MARGIN_SMALL_8,
+        //           margin: const EdgeInsets.symmetric(vertical: MARGIN_SMALL_8, horizontal: MARGIN_SMALL_1X),
+        //           decoration: BoxDecoration(
+        //             shape: BoxShape.circle,
+        //             boxShadow: [
+        //               position == entry.key
+        //                   ? const BoxShadow(
+        //                       color: PRIMARY_COLOR,
+        //                       blurRadius: 5.0,
+        //                       spreadRadius: 2.0)
+        //                   : const BoxShadow(),
+        //             ],
+        //             color: position == entry.key
+        //                 ? PRIMARY_COLOR
+        //                 : HOME_PAGE_INACTIVE_DOTS_COLOR,
+        //           )),
+        //     );
+        //   }).toList() ?? [],
+        // ),
       ],
     );
   }
